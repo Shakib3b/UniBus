@@ -2,18 +2,29 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>UniBus Admin Dashboard</title>
 
-    <!-- Leaflet -->
+
+    <!-- =====================================================
+         LEAFLET CSS
+    ====================================================== -->
+
     <link
         rel="stylesheet"
         href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     >
 
+
     <style>
+
         /* =====================================================
            RESET
         ===================================================== */
@@ -24,23 +35,31 @@
             padding: 0;
         }
 
+
         body {
+
             font-family:
                 Arial,
                 Helvetica,
                 sans-serif;
 
             background: #f5f7fb;
+
             color: #111827;
         }
 
+
         button,
         input,
-        textarea {
+        textarea,
+        select {
+
             font-family: inherit;
         }
 
+
         button {
+
             cursor: pointer;
         }
 
@@ -50,33 +69,47 @@
         ===================================================== */
 
         .header {
+
             height: 68px;
 
             background: #111827;
+
             color: white;
 
             display: flex;
+
             align-items: center;
+
             justify-content: space-between;
 
             padding: 0 25px;
 
             position: sticky;
+
             top: 0;
+
             z-index: 1000;
 
             box-shadow:
-                0 2px 10px rgba(0, 0, 0, 0.15);
+                0 2px 10px
+                rgba(0, 0, 0, 0.15);
         }
 
+
         .logo {
+
             display: flex;
+
             align-items: center;
+
             gap: 12px;
         }
 
+
         .logo-icon {
+
             width: 40px;
+
             height: 40px;
 
             background: #2563eb;
@@ -84,25 +117,37 @@
             border-radius: 10px;
 
             display: flex;
+
             align-items: center;
+
             justify-content: center;
 
             font-size: 21px;
         }
 
+
         .logo h1 {
+
             font-size: 19px;
         }
 
+
         .logo small {
+
             color: #9ca3af;
+
             font-size: 11px;
         }
 
+
         .admin-badge {
+
             background: #2563eb;
+
             padding: 8px 13px;
+
             border-radius: 20px;
+
             font-size: 12px;
         }
 
@@ -112,22 +157,33 @@
         ===================================================== */
 
         .container {
+
             max-width: 1450px;
+
             margin: auto;
+
             padding: 25px;
         }
 
+
         .page-heading {
+
             margin-bottom: 22px;
         }
 
+
         .page-heading h2 {
+
             font-size: 28px;
+
             margin-bottom: 5px;
         }
 
+
         .page-heading p {
+
             color: #6b7280;
+
             font-size: 14px;
         }
 
@@ -137,7 +193,9 @@
         ===================================================== */
 
         .stats {
+
             display: grid;
+
             grid-template-columns:
                 repeat(4, 1fr);
 
@@ -146,58 +204,83 @@
             margin-bottom: 22px;
         }
 
+
         .stat {
+
             background: white;
 
             border: 1px solid #e5e7eb;
+
             border-radius: 14px;
 
             padding: 18px;
 
             display: flex;
+
             align-items: center;
+
             gap: 13px;
 
             box-shadow:
-                0 3px 12px rgba(0, 0, 0, 0.04);
+                0 3px 12px
+                rgba(0, 0, 0, 0.04);
         }
 
+
         .stat-icon {
+
             width: 45px;
+
             height: 45px;
 
             border-radius: 11px;
 
             display: flex;
+
             align-items: center;
+
             justify-content: center;
 
             font-size: 21px;
         }
 
+
         .stat-icon.blue {
+
             background: #dbeafe;
         }
 
+
         .stat-icon.green {
+
             background: #dcfce7;
         }
 
+
         .stat-icon.orange {
+
             background: #ffedd5;
         }
 
+
         .stat-icon.purple {
+
             background: #ede9fe;
         }
 
+
         .stat strong {
+
             display: block;
+
             font-size: 23px;
         }
 
+
         .stat span {
+
             color: #6b7280;
+
             font-size: 12px;
         }
 
@@ -207,9 +290,11 @@
         ===================================================== */
 
         .card {
+
             background: white;
 
             border: 1px solid #e5e7eb;
+
             border-radius: 15px;
 
             margin-bottom: 22px;
@@ -217,32 +302,45 @@
             overflow: hidden;
 
             box-shadow:
-                0 3px 12px rgba(0, 0, 0, 0.04);
+                0 3px 12px
+                rgba(0, 0, 0, 0.04);
         }
 
+
         .card-header {
+
             padding: 18px 21px;
 
             border-bottom: 1px solid #e5e7eb;
 
             display: flex;
+
             align-items: center;
+
             justify-content: space-between;
 
             gap: 15px;
         }
 
+
         .card-header h3 {
+
             font-size: 18px;
         }
 
+
         .card-header p {
+
             color: #6b7280;
+
             font-size: 12px;
+
             margin-top: 4px;
         }
 
+
         .card-body {
+
             padding: 20px;
         }
 
@@ -252,31 +350,46 @@
         ===================================================== */
 
         .form-grid {
+
             display: grid;
+
             grid-template-columns:
                 repeat(2, 1fr);
 
             gap: 15px;
         }
 
+
         .field {
+
             display: flex;
+
             flex-direction: column;
+
             gap: 6px;
         }
 
+
         .field.full {
+
             grid-column: 1 / -1;
         }
 
+
         label {
+
             font-size: 12px;
+
             font-weight: 700;
+
             color: #374151;
         }
 
+
         input,
-        textarea {
+        textarea,
+        select {
+
             width: 100%;
 
             border: 1px solid #d1d5db;
@@ -292,16 +405,23 @@
             background: white;
         }
 
+
         input:focus,
-        textarea:focus {
+        textarea:focus,
+        select:focus {
+
             border-color: #2563eb;
 
             box-shadow:
-                0 0 0 3px rgba(37, 99, 235, 0.1);
+                0 0 0 3px
+                rgba(37, 99, 235, 0.1);
         }
 
+
         textarea {
+
             min-height: 75px;
+
             resize: vertical;
         }
 
@@ -311,14 +431,19 @@
         ===================================================== */
 
         .buttons {
+
             display: flex;
+
             flex-wrap: wrap;
+
             gap: 8px;
 
             margin-top: 14px;
         }
 
+
         .btn {
+
             border: none;
 
             border-radius: 8px;
@@ -326,40 +451,61 @@
             padding: 9px 13px;
 
             font-size: 12px;
+
             font-weight: 700;
         }
 
+
         .primary {
+
             background: #2563eb;
+
             color: white;
         }
 
+
         .primary:hover {
+
             background: #1d4ed8;
         }
 
+
         .success {
+
             background: #16a34a;
+
             color: white;
         }
+
 
         .warning {
+
             background: #f59e0b;
+
             color: white;
         }
+
 
         .danger {
+
             background: #dc2626;
+
             color: white;
         }
 
+
         .secondary {
+
             background: #e5e7eb;
+
             color: #374151;
         }
 
+
         .dark {
+
             background: #111827;
+
             color: white;
         }
 
@@ -369,15 +515,21 @@
         ===================================================== */
 
         .toolbar {
+
             display: flex;
+
             flex-wrap: wrap;
+
             justify-content: space-between;
+
             gap: 10px;
 
             margin-bottom: 15px;
         }
 
+
         .search {
+
             max-width: 300px;
         }
 
@@ -387,26 +539,35 @@
         ===================================================== */
 
         .table-wrap {
+
             overflow-x: auto;
         }
 
+
         table {
+
             width: 100%;
+
             border-collapse: collapse;
         }
 
+
         th,
         td {
+
             padding: 12px;
 
-            border-bottom: 1px solid #e5e7eb;
+            border-bottom:
+                1px solid #e5e7eb;
 
             text-align: left;
 
             font-size: 12px;
         }
 
+
         th {
+
             background: #f9fafb;
 
             color: #6b7280;
@@ -416,18 +577,27 @@
             text-transform: uppercase;
         }
 
+
         tr:hover td {
+
             background: #fafafa;
         }
 
+
         .actions {
+
             display: flex;
+
             flex-wrap: wrap;
+
             gap: 5px;
         }
 
+
         .actions .btn {
+
             padding: 6px 8px;
+
             font-size: 10px;
         }
 
@@ -437,6 +607,7 @@
         ===================================================== */
 
         .status {
+
             display: inline-block;
 
             padding: 4px 8px;
@@ -444,16 +615,82 @@
             border-radius: 20px;
 
             font-size: 10px;
+
             font-weight: 700;
         }
 
+
         .active {
+
             background: #dcfce7;
+
             color: #166534;
         }
 
+
         .inactive {
+
             background: #fee2e2;
+
+            color: #991b1b;
+        }
+
+
+        /* =====================================================
+           BUS ROUTE ASSIGNMENT
+        ===================================================== */
+
+        .assignment-box {
+
+            background: #f9fafb;
+
+            border: 1px solid #e5e7eb;
+
+            border-radius: 12px;
+
+            padding: 18px;
+        }
+
+
+        .assignment-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                1fr 1fr auto;
+
+            gap: 12px;
+
+            align-items: end;
+        }
+
+
+        .assignment-status {
+
+            display: inline-block;
+
+            padding: 4px 8px;
+
+            border-radius: 20px;
+
+            font-size: 10px;
+
+            font-weight: 700;
+        }
+
+
+        .assignment-active {
+
+            background: #dcfce7;
+
+            color: #166534;
+        }
+
+
+        .assignment-inactive {
+
+            background: #fee2e2;
+
             color: #991b1b;
         }
 
@@ -463,7 +700,9 @@
         ===================================================== */
 
         #map {
+
             width: 100%;
+
             height: 540px;
 
             border-radius: 12px;
@@ -473,7 +712,9 @@
             z-index: 1;
         }
 
+
         .map-help {
+
             background: #eff6ff;
 
             border: 1px solid #bfdbfe;
@@ -495,6 +736,7 @@
         ===================================================== */
 
         .route-layout {
+
             display: grid;
 
             grid-template-columns:
@@ -503,7 +745,9 @@
             gap: 18px;
         }
 
+
         .route-panel {
+
             background: #f9fafb;
 
             border: 1px solid #e5e7eb;
@@ -515,11 +759,15 @@
             height: fit-content;
         }
 
+
         .route-panel h4 {
+
             margin-bottom: 13px;
         }
 
+
         .route-stat {
+
             background: white;
 
             border: 1px solid #e5e7eb;
@@ -531,7 +779,9 @@
             margin-top: 9px;
         }
 
+
         .route-stat span {
+
             display: block;
 
             color: #6b7280;
@@ -541,7 +791,9 @@
             margin-bottom: 4px;
         }
 
+
         .route-stat strong {
+
             font-size: 15px;
         }
 
@@ -551,6 +803,7 @@
         ===================================================== */
 
         .selected-list {
+
             list-style: none;
 
             margin-top: 10px;
@@ -560,7 +813,9 @@
             overflow-y: auto;
         }
 
+
         .selected-list li {
+
             background: white;
 
             border: 1px solid #e5e7eb;
@@ -578,8 +833,11 @@
             gap: 8px;
         }
 
+
         .number {
+
             width: 24px;
+
             height: 24px;
 
             border-radius: 50%;
@@ -591,6 +849,7 @@
             display: flex;
 
             align-items: center;
+
             justify-content: center;
 
             font-size: 10px;
@@ -600,13 +859,17 @@
             flex-shrink: 0;
         }
 
+
         .selected-name {
+
             flex: 1;
 
             font-size: 11px;
         }
 
+
         .remove {
+
             background: #fee2e2;
 
             color: #991b1b;
@@ -626,6 +889,7 @@
         ===================================================== */
 
         .empty {
+
             text-align: center;
 
             padding: 25px;
@@ -641,15 +905,19 @@
         ===================================================== */
 
         #toast {
+
             position: fixed;
 
             right: 20px;
+
             bottom: 20px;
 
             z-index: 9999;
         }
 
+
         .toast-message {
+
             background: #111827;
 
             color: white;
@@ -665,16 +933,107 @@
             font-size: 12px;
 
             box-shadow:
-                0 8px 25px rgba(0, 0, 0, 0.2);
+                0 8px 25px
+                rgba(0, 0, 0, 0.2);
         }
+
 
         .toast-success {
-            border-left: 4px solid #22c55e;
+
+            border-left:
+                4px solid #22c55e;
         }
 
+
         .toast-error {
-            border-left: 4px solid #ef4444;
+
+            border-left:
+                4px solid #ef4444;
         }
+
+        /* =====================================================
+   DRIVER MANAGEMENT
+===================================================== */
+
+.driver-form {
+    margin-bottom: 25px;
+}
+
+.driver-password {
+    display: flex;
+    gap: 8px;
+}
+
+.driver-password input {
+    flex: 1;
+}
+
+.driver-list {
+    margin-top: 25px;
+}
+
+.driver-table-wrapper {
+    overflow-x: auto;
+}
+
+.driver-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.driver-table th {
+    text-align: left;
+    background: #f8fafc;
+    color: #64748b;
+    font-size: 12px;
+    text-transform: uppercase;
+    padding: 13px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.driver-table td {
+    padding: 14px 13px;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 13px;
+}
+
+.driver-name {
+    font-weight: 700;
+}
+
+.driver-email {
+    color: #64748b;
+    font-size: 12px;
+    margin-top: 3px;
+}
+
+.driver-actions {
+    display: flex;
+    gap: 7px;
+    flex-wrap: wrap;
+}
+
+.driver-status {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.driver-active {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.driver-inactive {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.driver-bus {
+    font-weight: 600;
+}
 
 
         /* =====================================================
@@ -684,54 +1043,86 @@
         @media (max-width: 1000px) {
 
             .stats {
+
                 grid-template-columns:
                     repeat(2, 1fr);
             }
 
+
             .route-layout {
+
                 grid-template-columns: 1fr;
             }
+
         }
+
+
+        @media (max-width: 800px) {
+
+            .assignment-grid {
+
+                grid-template-columns: 1fr;
+            }
+
+        }
+
 
         @media (max-width: 650px) {
 
             .header {
+
                 padding: 0 15px;
             }
 
+
             .admin-badge {
+
                 display: none;
             }
 
+
             .container {
+
                 padding: 15px;
             }
 
+
             .stats {
+
                 grid-template-columns: 1fr;
             }
+
 
             .form-grid {
+
                 grid-template-columns: 1fr;
             }
 
+
             .field.full {
+
                 grid-column: auto;
             }
 
+
             #map {
+
                 height: 430px;
             }
+
         }
+
     </style>
+
 </head>
 
 
 <body>
 
+
     <!-- =====================================================
          HEADER
-    ===================================================== -->
+    ====================================================== -->
 
     <header class="header">
 
@@ -741,33 +1132,51 @@
                 🚌
             </div>
 
+
             <div>
-                <h1>UniBus</h1>
-                <small>Administration Portal</small>
+
+                <h1>
+                    UniBus
+                </h1>
+
+                <small>
+                    Administration Portal
+                </small>
+
             </div>
 
         </div>
 
+
         <div class="admin-badge">
+
             Administrator
+
         </div>
 
     </header>
 
+
+    <!-- =====================================================
+         MAIN CONTAINER
+    ====================================================== -->
 
     <main class="container">
 
 
         <!-- =================================================
              PAGE TITLE
-        ================================================= -->
+        ================================================== -->
 
         <div class="page-heading">
 
-            <h2>Admin Dashboard</h2>
+            <h2>
+                Admin Dashboard
+            </h2>
 
             <p>
-                Manage buses, stops and routes from one place.
+                Manage buses, stops, routes and assignments
+                from one place.
             </p>
 
         </div>
@@ -775,9 +1184,10 @@
 
         <!-- =================================================
              STATISTICS
-        ================================================= -->
+        ================================================== -->
 
         <div class="stats">
+
 
             <div class="stat">
 
@@ -785,9 +1195,17 @@
                     🚌
                 </div>
 
+
                 <div>
-                    <strong id="totalBuses">0</strong>
-                    <span>Total Buses</span>
+
+                    <strong id="totalBuses">
+                        0
+                    </strong>
+
+                    <span>
+                        Total Buses
+                    </span>
+
                 </div>
 
             </div>
@@ -799,9 +1217,17 @@
                     ✓
                 </div>
 
+
                 <div>
-                    <strong id="activeBuses">0</strong>
-                    <span>Active Buses</span>
+
+                    <strong id="activeBuses">
+                        0
+                    </strong>
+
+                    <span>
+                        Active Buses
+                    </span>
+
                 </div>
 
             </div>
@@ -813,9 +1239,17 @@
                     📍
                 </div>
 
+
                 <div>
-                    <strong id="totalStops">0</strong>
-                    <span>Total Stops</span>
+
+                    <strong id="totalStops">
+                        0
+                    </strong>
+
+                    <span>
+                        Total Stops
+                    </span>
+
                 </div>
 
             </div>
@@ -827,27 +1261,39 @@
                     🛣️
                 </div>
 
+
                 <div>
-                    <strong id="totalRoutes">0</strong>
-                    <span>Total Routes</span>
+
+                    <strong id="totalRoutes">
+                        0
+                    </strong>
+
+                    <span>
+                        Total Routes
+                    </span>
+
                 </div>
 
             </div>
+
 
         </div>
 
 
         <!-- =================================================
              BUS MANAGEMENT
-        ================================================= -->
+        ================================================== -->
 
         <section class="card">
+
 
             <div class="card-header">
 
                 <div>
 
-                    <h3>🚌 Bus Management</h3>
+                    <h3>
+                        🚌 Bus Management
+                    </h3>
 
                     <p>
                         Add and manage UniBus vehicles.
@@ -862,6 +1308,7 @@
 
 
                 <div class="form-grid">
+
 
                     <div class="field">
 
@@ -891,6 +1338,7 @@
                         >
 
                     </div>
+
 
                 </div>
 
@@ -931,14 +1379,26 @@
 
                             <tr>
 
-                                <th>Number</th>
-                                <th>Name</th>
-                                <th>Status</th>
-                                <th>Actions</th>
+                                <th>
+                                    Number
+                                </th>
+
+                                <th>
+                                    Name
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                                <th>
+                                    Actions
+                                </th>
 
                             </tr>
 
                         </thead>
+
 
                         <tbody id="busTable"></tbody>
 
@@ -946,25 +1406,450 @@
 
                 </div>
 
+
             </div>
 
         </section>
 
 
         <!-- =================================================
-             STOP + ROUTE MAP
-        ================================================= -->
+             BUS ROUTE ASSIGNMENT
+        ================================================== -->
 
         <section class="card">
+
 
             <div class="card-header">
 
                 <div>
 
-                    <h3>📍 Stops & Route Builder</h3>
+                    <h3>
+                        🔗 Bus → Route Assignment
+                    </h3>
 
                     <p>
-                        Create stops and build road-following routes.
+                        Assign buses to their operating routes.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="card-body">
+
+
+                <div class="assignment-box">
+
+
+                    <div class="assignment-grid">
+
+
+                        <div class="field">
+
+                            <label>
+                                Select Bus
+                            </label>
+
+                            <select
+                                id="assignmentBus"
+                            >
+
+                                <option value="">
+                                    Select a bus
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="field">
+
+                            <label>
+                                Select Route
+                            </label>
+
+                            <select
+                                id="assignmentRoute"
+                            >
+
+                                <option value="">
+                                    Select a route
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <button
+                            class="btn primary"
+                            onclick="assignBusToRoute()"
+                        >
+                            🔗 Assign Bus
+                        </button>
+
+
+                    </div>
+
+                </div>
+
+
+                <!-- =========================================
+                     CURRENT ASSIGNMENTS
+                ========================================== -->
+
+                <div
+                    style="
+                        margin-top:25px;
+                        border-top:1px solid #e5e7eb;
+                        padding-top:20px;
+                    "
+                >
+
+
+                    <div class="toolbar">
+
+
+                        <div>
+
+                            <h3
+                                style="
+                                    font-size:16px;
+                                    margin-bottom:4px;
+                                "
+                            >
+                                Current Assignments
+                            </h3>
+
+                        </div>
+
+
+                        <input
+                            id="assignmentSearch"
+                            class="search"
+                            type="text"
+                            placeholder="Search assignments..."
+                            oninput="renderAssignments()"
+                        >
+
+
+                    </div>
+
+
+                    <div class="table-wrap">
+
+
+                        <table>
+
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        Bus
+                                    </th>
+
+                                    <th>
+                                        Route
+                                    </th>
+
+                                    <th>
+                                        Status
+                                    </th>
+
+                                    <th>
+                                        Assigned At
+                                    </th>
+
+                                    <th>
+                                        Actions
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody
+                                id="assignmentTable"
+                            ></tbody>
+
+
+                        </table>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+     DRIVER MANAGEMENT
+================================================= -->
+
+<section class="card">
+
+    <div class="card-header">
+
+        <div>
+
+            <h3>👨‍✈️ Driver Management</h3>
+
+            <p>
+                Create and manage UniBus driver accounts.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="card-body">
+
+        <div class="form-grid">
+
+            <!-- FULL NAME -->
+
+            <div class="field">
+
+                <label>
+                    Full Name
+                </label>
+
+                <input
+                    id="driverFullName"
+                    type="text"
+                    placeholder="Rahim Ahmed"
+                >
+
+            </div>
+
+
+            <!-- EMAIL -->
+
+            <div class="field">
+
+                <label>
+                    Login Email
+                </label>
+
+                <input
+                    id="driverEmail"
+                    type="email"
+                    placeholder="driver@busportal.app"
+                >
+
+            </div>
+
+
+            <!-- PASSWORD -->
+
+            <div class="field">
+
+                <label>
+                    Password
+                </label>
+
+                <input
+                    id="driverPassword"
+                    type="password"
+                    placeholder="Minimum 6 characters"
+                >
+
+            </div>
+
+
+            <!-- PHONE -->
+
+            <div class="field">
+
+                <label>
+                    Phone
+                </label>
+
+                <input
+                    id="driverPhone"
+                    type="text"
+                    placeholder="017XXXXXXXX"
+                >
+
+            </div>
+
+
+            <!-- LICENSE -->
+
+            <div class="field">
+
+                <label>
+                    License Number
+                </label>
+
+                <input
+                    id="driverLicense"
+                    type="text"
+                    placeholder="DL-123456"
+                >
+
+            </div>
+
+
+            <!-- BUS -->
+
+            <div class="field">
+
+                <label>
+                    Assign Bus
+                </label>
+
+                <select id="driverBus">
+
+                    <option value="">
+                        No bus assigned
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+
+        <div style="margin-top: 18px;">
+
+            <button
+                class="btn primary"
+                onclick="createDriver()"
+            >
+                👨‍✈️ Create Driver
+            </button>
+
+        </div>
+
+
+        <!-- DRIVER LIST -->
+
+        <div class="driver-list">
+
+            <div
+                style="
+                    display:flex;
+                    justify-content:space-between;
+                    align-items:center;
+                    gap:15px;
+                    margin-bottom:15px;
+                "
+            >
+
+                <h3>
+                    Current Drivers
+                </h3>
+
+
+                <input
+                    id="driverSearch"
+                    type="text"
+                    placeholder="Search drivers..."
+                    oninput="renderDrivers()"
+                    style="
+                        max-width:300px;
+                        width:100%;
+                    "
+                >
+
+            </div>
+
+
+            <div class="driver-table-wrapper">
+
+                <table class="driver-table">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                DRIVER
+                            </th>
+
+                            <th>
+                                PHONE
+                            </th>
+
+                            <th>
+                                LICENSE
+                            </th>
+
+                            <th>
+                                BUS
+                            </th>
+
+                            <th>
+                                STATUS
+                            </th>
+
+                            <th>
+                                ACTIONS
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="driverTable">
+
+                        <tr>
+
+                            <td
+                                colspan="6"
+                                class="empty"
+                            >
+                                No drivers found.
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+        <!-- =================================================
+             STOP + ROUTE MAP
+        ================================================== -->
+
+        <section class="card">
+
+
+            <div class="card-header">
+
+                <div>
+
+                    <h3>
+                        📍 Stops & Route Builder
+                    </h3>
+
+                    <p>
+                        Create stops and build
+                        road-following routes.
                     </p>
 
                 </div>
@@ -977,14 +1862,27 @@
 
                 <div class="map-help">
 
-                    <strong>Normal mode:</strong>
-                    click the map to select a location and create a stop.
+                    <strong>
+                        Normal mode:
+                    </strong>
+
+                    click the map to select a location
+                    and create a stop.
+
 
                     <br><br>
 
-                    <strong>Route mode:</strong>
-                    click <strong>Select Stops</strong>, then click existing
-                    stop markers in the order the bus should travel.
+
+                    <strong>
+                        Route mode:
+                    </strong>
+
+                    click
+                    <strong>
+                        Select Stops
+                    </strong>,
+                    then click existing stop markers
+                    in the order the bus should travel.
 
                 </div>
 
@@ -1000,6 +1898,7 @@
                     class="form-grid"
                     style="margin-top:18px;"
                 >
+
 
                     <div class="field">
 
@@ -1031,10 +1930,12 @@
 
                     </div>
 
+
                 </div>
 
 
                 <div class="buttons">
+
 
                     <button
                         class="btn primary"
@@ -1043,12 +1944,14 @@
                         + Add Stop
                     </button>
 
+
                     <button
                         class="btn secondary"
                         onclick="clearMapSelection()"
                     >
                         Clear Location
                     </button>
+
 
                     <button
                         class="btn dark"
@@ -1057,12 +1960,13 @@
                         Show All Stops
                     </button>
 
+
                 </div>
 
 
                 <!-- =================================================
                      ROUTE BUILDER
-                ================================================= -->
+                ================================================== -->
 
                 <div
                     style="
@@ -1072,14 +1976,14 @@
                     "
                 >
 
-                    <div
-                        class="route-layout"
-                    >
+
+                    <div class="route-layout">
 
 
                         <!-- ROUTE FORM -->
 
                         <div>
+
 
                             <h3
                                 style="
@@ -1092,6 +1996,7 @@
 
 
                             <div class="form-grid">
+
 
                                 <div class="field">
 
@@ -1122,10 +2027,12 @@
 
                                 </div>
 
+
                             </div>
 
 
                             <div class="buttons">
+
 
                                 <button
                                     id="routeModeButton"
@@ -1143,7 +2050,9 @@
                                     Clear Route
                                 </button>
 
+
                             </div>
+
 
                         </div>
 
@@ -1151,6 +2060,7 @@
                         <!-- ROUTE INFO -->
 
                         <div class="route-panel">
+
 
                             <h4>
                                 Route Information
@@ -1229,6 +2139,7 @@
 
                             <div class="buttons">
 
+
                                 <button
                                     class="btn success"
                                     onclick="generateRoute()"
@@ -1244,18 +2155,22 @@
                                     💾 Save Route
                                 </button>
 
+
                             </div>
+
 
                         </div>
 
+
                     </div>
+
 
                 </div>
 
 
                 <!-- =================================================
                      STOP LIST
-                ================================================= -->
+                ================================================== -->
 
                 <div
                     style="
@@ -1265,7 +2180,9 @@
                     "
                 >
 
+
                     <div class="toolbar">
+
 
                         <div>
 
@@ -1289,34 +2206,58 @@
                             oninput="renderStops()"
                         >
 
+
                     </div>
 
 
                     <div class="table-wrap">
 
+
                         <table>
+
 
                             <thead>
 
                                 <tr>
 
-                                    <th>Stop</th>
-                                    <th>Latitude</th>
-                                    <th>Longitude</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
+                                    <th>
+                                        Stop
+                                    </th>
+
+                                    <th>
+                                        Latitude
+                                    </th>
+
+                                    <th>
+                                        Longitude
+                                    </th>
+
+                                    <th>
+                                        Status
+                                    </th>
+
+                                    <th>
+                                        Actions
+                                    </th>
 
                                 </tr>
 
                             </thead>
 
-                            <tbody id="stopTable"></tbody>
+
+                            <tbody
+                                id="stopTable"
+                            ></tbody>
+
 
                         </table>
 
+
                     </div>
 
+
                 </div>
+
 
             </div>
 
@@ -1324,16 +2265,19 @@
 
 
         <!-- =================================================
-             ROUTES
-        ================================================= -->
+             SAVED ROUTES
+        ================================================== -->
 
         <section class="card">
+
 
             <div class="card-header">
 
                 <div>
 
-                    <h3>🛣️ Saved Routes</h3>
+                    <h3>
+                        🛣️ Saved Routes
+                    </h3>
 
                     <p>
                         View and manage your existing routes.
@@ -1349,6 +2293,7 @@
 
                 <div class="toolbar">
 
+
                     <input
                         id="routeSearch"
                         class="search"
@@ -1357,48 +2302,74 @@
                         oninput="renderRoutes()"
                     >
 
+
                 </div>
 
 
                 <div class="table-wrap">
 
+
                     <table>
+
 
                         <thead>
 
                             <tr>
 
-                                <th>Route</th>
-                                <th>Description</th>
-                                <th>Stops</th>
-                                <th>Status</th>
-                                <th>Actions</th>
+                                <th>
+                                    Route
+                                </th>
+
+                                <th>
+                                    Description
+                                </th>
+
+                                <th>
+                                    Stops
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                                <th>
+                                    Actions
+                                </th>
 
                             </tr>
 
                         </thead>
 
-                        <tbody id="routeTable"></tbody>
+
+                        <tbody
+                            id="routeTable"
+                        ></tbody>
+
 
                     </table>
 
+
                 </div>
+
 
             </div>
 
         </section>
 
+
     </main>
 
 
-    <!-- TOAST -->
+    <!-- =====================================================
+         TOAST
+    ====================================================== -->
 
     <div id="toast"></div>
 
 
     <!-- =====================================================
          LIBRARIES
-    ===================================================== -->
+    ====================================================== -->
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -1408,6 +2379,7 @@
 
 
     <script>
+
 
         /* =====================================================
            AUTH
@@ -1421,28 +2393,43 @@
         ===================================================== */
 
         let buses = [];
+
         let stops = [];
+
         let routes = [];
+
+        let assignments = [];
+
+        let drivers = [];
+
 
         let map;
 
+
         let temporaryMarker = null;
 
+
         let selectedLat = null;
+
         let selectedLng = null;
+
 
         let stopMarkers = [];
 
+
         let routeMode = false;
+
 
         let selectedRouteStops = [];
 
+
         let routeLayer = null;
+
 
         let routeGeometry = null;
 
 
-        /* =====================================================
+                /* =====================================================
            TOAST
         ===================================================== */
 
@@ -1546,6 +2533,7 @@
                 "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
                 {
                     maxZoom: 19,
+
                     attribution:
                         "&copy; OpenStreetMap contributors"
                 }
@@ -1560,11 +2548,13 @@
 
                     /*
                      * When route mode is active,
-                     * map clicks do NOT create stops.
+                     * map clicks do not create stops.
                      */
 
                     if (routeMode) {
+
                         return;
+
                     }
 
 
@@ -1614,7 +2604,7 @@
 
             /*
              * Important for Leaflet when
-             * map is inside a dynamic layout.
+             * the map is inside a layout.
              */
 
             setTimeout(
@@ -1640,6 +2630,10 @@
             await loadStops();
 
             await loadRoutes();
+
+            await loadAssignments();
+
+            await loadDrivers();
 
         }
 
@@ -1688,6 +2682,16 @@
 
             updateStats();
 
+
+            /*
+             * Update assignment dropdown
+             * whenever buses change.
+             */
+
+            populateAssignmentDropdowns();
+
+            populateDriverBusDropdown();
+
         }
 
 
@@ -1728,6 +2732,7 @@
                     .insert({
                         bus_number:
                             number,
+
                         bus_name:
                             name || null
                     });
@@ -1810,14 +2815,18 @@
             if (!filtered.length) {
 
                 table.innerHTML = `
+
                     <tr>
+
                         <td
                             colspan="4"
                             class="empty"
                         >
                             No buses found.
                         </td>
+
                     </tr>
+
                 `;
 
                 return;
@@ -1832,19 +2841,25 @@
                     <tr>
 
                         <td>
+
                             <strong>
                                 ${escapeHTML(
                                     bus.bus_number
                                 )}
                             </strong>
+
                         </td>
 
+
                         <td>
+
                             ${escapeHTML(
                                 bus.bus_name ||
                                 "—"
                             )}
+
                         </td>
+
 
                         <td>
 
@@ -1855,41 +2870,53 @@
                                         : "inactive"
                                 }"
                             >
+
                                 ${
                                     bus.is_active
                                         ? "Active"
                                         : "Inactive"
                                 }
+
                             </span>
 
                         </td>
+
 
                         <td>
 
                             <div class="actions">
 
+
                                 <button
                                     class="btn warning"
-                                    onclick="toggleBus(
-                                        '${bus.id}',
-                                        ${bus.is_active}
-                                    )"
+                                    onclick="
+                                        toggleBus(
+                                            '${bus.id}',
+                                            ${bus.is_active}
+                                        )
+                                    "
                                 >
+
                                     ${
                                         bus.is_active
                                             ? "Deactivate"
                                             : "Activate"
                                     }
+
                                 </button>
+
 
                                 <button
                                     class="btn danger"
-                                    onclick="deleteBus(
-                                        '${bus.id}'
-                                    )"
+                                    onclick="
+                                        deleteBus(
+                                            '${bus.id}'
+                                        )
+                                    "
                                 >
                                     Delete
                                 </button>
+
 
                             </div>
 
@@ -1937,6 +2964,7 @@
 
             await loadBuses();
 
+
             toast(
                 "Bus status updated."
             );
@@ -1953,7 +2981,9 @@
                     "Delete this bus?"
                 )
             ) {
+
                 return;
+
             }
 
 
@@ -1982,9 +3012,1501 @@
 
             await loadBuses();
 
+
             toast(
                 "Bus deleted."
             );
+
+        }
+
+
+        /* =====================================================
+           BUS ROUTE ASSIGNMENTS
+        ===================================================== */
+
+        async function loadAssignments() {
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+                    .from(
+                        "bus_route_assignments"
+                    )
+                    .select(`
+                        id,
+                        bus_id,
+                        route_id,
+                        is_active,
+                        assigned_at,
+
+                        buses (
+                            bus_number,
+                            bus_name
+                        ),
+
+                        routes (
+                            route_name,
+                            description
+                        )
+                    `)
+                    .order(
+                        "assigned_at",
+                        {
+                            ascending: false
+                        }
+                    );
+
+
+            if (error) {
+
+                console.error(
+                    error
+                );
+
+                toast(
+                    "Could not load bus-route assignments.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            assignments =
+                data || [];
+
+
+            populateAssignmentDropdowns();
+
+            renderAssignments();
+
+        }
+
+
+        function populateAssignmentDropdowns() {
+
+            const busSelect =
+                document.getElementById(
+                    "assignmentBus"
+                );
+
+
+            const routeSelect =
+                document.getElementById(
+                    "assignmentRoute"
+                );
+
+
+            if (
+                !busSelect ||
+                !routeSelect
+            ) {
+
+                return;
+
+            }
+
+
+            const activeBuses =
+                buses.filter(
+                    bus =>
+                        bus.is_active
+                );
+
+
+            busSelect.innerHTML = `
+
+                <option value="">
+                    Select a bus
+                </option>
+
+                ${
+                    activeBuses
+                        .map(
+                            bus => `
+
+                                <option
+                                    value="${bus.id}"
+                                >
+
+                                    ${escapeHTML(
+                                        bus.bus_number
+                                    )}
+
+                                    ${
+                                        bus.bus_name
+                                            ? " - " +
+                                              escapeHTML(
+                                                  bus.bus_name
+                                              )
+                                            : ""
+                                    }
+
+                                </option>
+
+                            `
+                        )
+                        .join("")
+                }
+
+            `;
+
+
+            const activeRoutes =
+                routes.filter(
+                    route =>
+                        route.is_active
+                );
+
+
+            routeSelect.innerHTML = `
+
+                <option value="">
+                    Select a route
+                </option>
+
+                ${
+                    activeRoutes
+                        .map(
+                            route => `
+
+                                <option
+                                    value="${route.id}"
+                                >
+
+                                    ${escapeHTML(
+                                        route.route_name
+                                    )}
+
+                                </option>
+
+                            `
+                        )
+                        .join("")
+                }
+
+            `;
+
+        }
+
+
+        async function assignBusToRoute() {
+
+            const busId =
+                document.getElementById(
+                    "assignmentBus"
+                ).value;
+
+
+            const routeId =
+                document.getElementById(
+                    "assignmentRoute"
+                ).value;
+
+
+            if (!busId) {
+
+                toast(
+                    "Select a bus.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            if (!routeId) {
+
+                toast(
+                    "Select a route.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            /*
+             * Check whether this bus already
+             * has an active assignment.
+             */
+
+            const existing =
+                assignments.find(
+                    assignment =>
+
+                        assignment.bus_id ===
+                            busId &&
+
+                        assignment.is_active
+                );
+
+
+            if (existing) {
+
+                const existingRoute =
+                    existing.routes?.route_name ||
+                    "another route";
+
+
+                const confirmed =
+                    confirm(
+                        `This bus is already assigned to "${existingRoute}".\n\n` +
+                        `Do you want to change its route?`
+                    );
+
+
+                if (!confirmed) {
+
+                    return;
+
+                }
+
+
+                const {
+                    error:
+                        updateError
+                } =
+                    await supabaseClient
+                        .from(
+                            "bus_route_assignments"
+                        )
+                        .update({
+                            is_active:
+                                false
+                        })
+                        .eq(
+                            "id",
+                            existing.id
+                        );
+
+
+                if (updateError) {
+
+                    toast(
+                        updateError.message,
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+            }
+
+
+            /*
+             * Check whether this exact
+             * bus + route assignment already exists.
+             */
+
+            const oldAssignment =
+                assignments.find(
+                    assignment =>
+
+                        assignment.bus_id ===
+                            busId &&
+
+                        assignment.route_id ===
+                            routeId
+                );
+
+
+            if (oldAssignment) {
+
+                const {
+                    error
+                } =
+                    await supabaseClient
+                        .from(
+                            "bus_route_assignments"
+                        )
+                        .update({
+
+                            is_active:
+                                true,
+
+                            assigned_at:
+                                new Date()
+                                    .toISOString()
+
+                        })
+                        .eq(
+                            "id",
+                            oldAssignment.id
+                        );
+
+
+                if (error) {
+
+                    toast(
+                        error.message,
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+
+                toast(
+                    "Bus assigned to route successfully."
+                );
+
+            } else {
+
+                const {
+                    error
+                } =
+                    await supabaseClient
+                        .from(
+                            "bus_route_assignments"
+                        )
+                        .insert({
+
+                            bus_id:
+                                busId,
+
+                            route_id:
+                                routeId,
+
+                            is_active:
+                                true
+
+                        });
+
+
+                if (error) {
+
+                    toast(
+                        error.message,
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+
+                toast(
+                    "Bus assigned to route successfully."
+                );
+
+            }
+
+
+            document.getElementById(
+                "assignmentBus"
+            ).value = "";
+
+
+            document.getElementById(
+                "assignmentRoute"
+            ).value = "";
+
+
+            await loadAssignments();
+
+        }
+
+
+        function renderAssignments() {
+
+            const table =
+                document.getElementById(
+                    "assignmentTable"
+                );
+
+
+            const search =
+                document.getElementById(
+                    "assignmentSearch"
+                )
+                .value
+                .trim()
+                .toLowerCase();
+
+
+            const filtered =
+                assignments.filter(
+                    assignment => {
+
+                        const bus =
+                            assignment.buses
+                                ?.bus_number ||
+                            "";
+
+
+                        const busName =
+                            assignment.buses
+                                ?.bus_name ||
+                            "";
+
+
+                        const route =
+                            assignment.routes
+                                ?.route_name ||
+                            "";
+
+
+                        return (
+
+                            bus
+                                .toLowerCase()
+                                .includes(
+                                    search
+                                )
+
+                            ||
+
+                            busName
+                                .toLowerCase()
+                                .includes(
+                                    search
+                                )
+
+                            ||
+
+                            route
+                                .toLowerCase()
+                                .includes(
+                                    search
+                                )
+
+                        );
+
+                    }
+                );
+
+
+            if (!filtered.length) {
+
+                table.innerHTML = `
+
+                    <tr>
+
+                        <td
+                            colspan="5"
+                            class="empty"
+                        >
+
+                            No assignments found.
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+                return;
+            }
+
+
+            table.innerHTML =
+                filtered
+                    .map(
+                        assignment => {
+
+                            const bus =
+                                assignment.buses
+                                    ?.bus_number ||
+                                "Unknown Bus";
+
+
+                            const busName =
+                                assignment.buses
+                                    ?.bus_name ||
+                                "";
+
+
+                            const route =
+                                assignment.routes
+                                    ?.route_name ||
+                                "Unknown Route";
+
+
+                            const date =
+                                assignment.assigned_at
+                                    ? new Date(
+                                        assignment.assigned_at
+                                    ).toLocaleString()
+                                    : "—";
+
+
+                            return `
+
+                                <tr>
+
+
+                                    <td>
+
+                                        <strong>
+                                            ${escapeHTML(
+                                                bus
+                                            )}
+                                        </strong>
+
+                                        ${
+                                            busName
+                                                ? `
+
+                                                    <br>
+
+                                                    <small
+                                                        style="
+                                                            color:#6b7280;
+                                                        "
+                                                    >
+
+                                                        ${escapeHTML(
+                                                            busName
+                                                        )}
+
+                                                    </small>
+
+                                                `
+                                                : ""
+                                        }
+
+                                    </td>
+
+
+                                    <td>
+
+                                        ${escapeHTML(
+                                            route
+                                        )}
+
+                                    </td>
+
+
+                                    <td>
+
+                                        <span
+                                            class="
+                                                assignment-status
+                                                ${
+                                                    assignment.is_active
+                                                        ? "assignment-active"
+                                                        : "assignment-inactive"
+                                                }
+                                            "
+                                        >
+
+                                            ${
+                                                assignment.is_active
+                                                    ? "Active"
+                                                    : "Inactive"
+                                            }
+
+                                        </span>
+
+                                    </td>
+
+
+                                    <td>
+
+                                        ${escapeHTML(
+                                            date
+                                        )}
+
+                                    </td>
+
+
+                                    <td>
+
+                                        <div class="actions">
+
+
+                                            ${
+                                                assignment.is_active
+
+                                                    ? `
+
+                                                        <button
+                                                            class="btn warning"
+                                                            onclick="
+                                                                deactivateAssignment(
+                                                                    '${assignment.id}'
+                                                                )
+                                                            "
+                                                        >
+                                                            Unassign
+                                                        </button>
+
+                                                    `
+
+                                                    : `
+
+                                                        <button
+                                                            class="btn success"
+                                                            onclick="
+                                                                reactivateAssignment(
+                                                                    '${assignment.id}'
+                                                                )
+                                                            "
+                                                        >
+                                                            Reactivate
+                                                        </button>
+
+                                                    `
+                                            }
+
+
+                                        </div>
+
+                                    </td>
+
+
+                                </tr>
+
+                            `;
+
+                        }
+                    )
+                    .join("");
+
+        }
+
+
+        async function deactivateAssignment(
+            id
+        ) {
+
+            const confirmed =
+                confirm(
+                    "Unassign this bus from the route?"
+                );
+
+
+            if (!confirmed) {
+
+                return;
+
+            }
+
+
+            const {
+                error
+            } =
+                await supabaseClient
+                    .from(
+                        "bus_route_assignments"
+                    )
+                    .update({
+                        is_active:
+                            false
+                    })
+                    .eq(
+                        "id",
+                        id
+                    );
+
+
+            if (error) {
+
+                toast(
+                    error.message,
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            toast(
+                "Bus unassigned successfully."
+            );
+
+
+            await loadAssignments();
+
+        }
+
+
+        async function reactivateAssignment(
+            id
+        ) {
+
+            const assignment =
+                assignments.find(
+                    item =>
+                        item.id === id
+                );
+
+
+            if (!assignment) {
+
+                return;
+
+            }
+
+
+            /*
+             * A bus can only have one
+             * active route assignment.
+             */
+
+            const activeOther =
+                assignments.find(
+                    item =>
+
+                        item.bus_id ===
+                            assignment.bus_id &&
+
+                        item.is_active &&
+
+                        item.id !== id
+                );
+
+
+            if (activeOther) {
+
+                const routeName =
+                    activeOther.routes
+                        ?.route_name ||
+                    "another route";
+
+
+                toast(
+                    `This bus is already assigned to ${routeName}.`,
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            const {
+                error
+            } =
+                await supabaseClient
+                    .from(
+                        "bus_route_assignments"
+                    )
+                    .update({
+
+                        is_active:
+                            true,
+
+                        assigned_at:
+                            new Date()
+                                .toISOString()
+
+                    })
+                    .eq(
+                        "id",
+                        id
+                    );
+
+
+            if (error) {
+
+                toast(
+                    error.message,
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            toast(
+                "Assignment reactivated."
+            );
+
+
+            await loadAssignments();
+
+        }
+
+
+        /* =====================================================
+           DRIVER MANAGEMENT
+        ===================================================== */
+
+        async function loadDrivers() {
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+                    .from("drivers")
+                    .select("*")
+                    .order(
+                        "created_at",
+                        {
+                            ascending: false
+                        }
+                    );
+
+
+            if (error) {
+
+                console.error(
+                    error
+                );
+
+                toast(
+                    "Could not load drivers.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            drivers =
+                data || [];
+
+
+            populateDriverBusDropdown();
+
+            renderDrivers();
+
+        }
+
+
+        function populateDriverBusDropdown() {
+
+            const select =
+                document.getElementById(
+                    "driverBus"
+                );
+
+
+            if (!select) {
+                return;
+            }
+
+
+            select.innerHTML = `
+                <option value="">
+                    No bus assigned
+                </option>
+            `;
+
+
+            buses
+                .filter(
+                    bus =>
+                        bus.is_active
+                )
+                .forEach(
+                    bus => {
+
+                        const option =
+                            document.createElement(
+                                "option"
+                            );
+
+
+                        option.value =
+                            bus.id;
+
+
+                        option.textContent =
+                            bus.bus_number +
+                            (
+                                bus.bus_name
+                                    ? ` — ${bus.bus_name}`
+                                    : ""
+                            );
+
+
+                        select.appendChild(
+                            option
+                        );
+
+                    }
+                );
+
+        }
+
+
+        async function createDriver() {
+
+            const fullName =
+                document
+                    .getElementById(
+                        "driverFullName"
+                    )
+                    .value
+                    .trim();
+
+
+            const email =
+                document
+                    .getElementById(
+                        "driverEmail"
+                    )
+                    .value
+                    .trim();
+
+
+            const password =
+                document
+                    .getElementById(
+                        "driverPassword"
+                    )
+                    .value;
+
+
+            const phone =
+                document
+                    .getElementById(
+                        "driverPhone"
+                    )
+                    .value
+                    .trim();
+
+
+            const licenseNumber =
+                document
+                    .getElementById(
+                        "driverLicense"
+                    )
+                    .value
+                    .trim();
+
+
+            const busId =
+                document
+                    .getElementById(
+                        "driverBus"
+                    )
+                    .value;
+
+
+            if (
+                !fullName ||
+                !email ||
+                !password
+            ) {
+
+                toast(
+                    "Name, email and password are required.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            if (
+                password.length < 6
+            ) {
+
+                toast(
+                    "Password must be at least 6 characters.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            const emailPattern =
+                /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+
+            if (
+                !emailPattern.test(
+                    email
+                )
+            ) {
+
+                toast(
+                    "Enter a valid email address.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            try {
+
+                const {
+                    data: sessionData,
+                    error: sessionError
+                } =
+                    await supabaseClient
+                        .auth
+                        .getSession();
+
+
+                if (
+                    sessionError ||
+                    !sessionData.session
+                ) {
+
+                    toast(
+                        "Your session has expired. Please log in again.",
+                        "error"
+                    );
+
+                    return;
+
+                }
+
+
+                toast(
+                    "Creating driver account..."
+                );
+
+
+                const response =
+                    await fetch(
+                        "/.netlify/functions/create-driver",
+                        {
+
+                            method: "POST",
+
+                            headers: {
+
+                                "Content-Type":
+                                    "application/json",
+
+                                "Authorization":
+                                    `Bearer ${sessionData.session.access_token}`
+
+                            },
+
+                            body:
+                                JSON.stringify({
+
+                                    email:
+                                        email,
+
+                                    password:
+                                        password,
+
+                                    full_name:
+                                        fullName,
+
+                                    phone:
+                                        phone || null,
+
+                                    license_number:
+                                        licenseNumber || null,
+
+                                    bus_id:
+                                        busId || null
+
+                                })
+
+                        }
+                    );
+
+
+                let result = {};
+
+                try {
+                    result =
+                        await response.json();
+                } catch {
+                    result = {};
+                }
+
+
+                if (
+                    !response.ok
+                ) {
+
+                    throw new Error(
+                        result.error ||
+                        "Could not create driver."
+                    );
+
+                }
+
+
+                document
+                    .getElementById(
+                        "driverFullName"
+                    )
+                    .value = "";
+
+
+                document
+                    .getElementById(
+                        "driverEmail"
+                    )
+                    .value = "";
+
+
+                document
+                    .getElementById(
+                        "driverPassword"
+                    )
+                    .value = "";
+
+
+                document
+                    .getElementById(
+                        "driverPhone"
+                    )
+                    .value = "";
+
+
+                document
+                    .getElementById(
+                        "driverLicense"
+                    )
+                    .value = "";
+
+
+                document
+                    .getElementById(
+                        "driverBus"
+                    )
+                    .value = "";
+
+
+                toast(
+                    "Driver created successfully."
+                );
+
+
+                await loadDrivers();
+
+            } catch (
+                error
+            ) {
+
+                console.error(
+                    error
+                );
+
+                toast(
+                    error.message ||
+                    "Could not create driver.",
+                    "error"
+                );
+
+            }
+
+        }
+
+
+        function renderDrivers() {
+
+            const table =
+                document.getElementById(
+                    "driverTable"
+                );
+
+
+            if (!table) {
+                return;
+            }
+
+
+            const searchInput =
+                document.getElementById(
+                    "driverSearch"
+                );
+
+
+            const search =
+                searchInput
+                    ? searchInput.value
+                        .trim()
+                        .toLowerCase()
+                    : "";
+
+
+            const filtered =
+                drivers.filter(
+                    driver => {
+
+                        const bus =
+                            buses.find(
+                                item =>
+                                    item.id ===
+                                    driver.bus_id
+                            );
+
+
+                        return (
+
+                            (
+                                driver.full_name ||
+                                ""
+                            )
+                            .toLowerCase()
+                            .includes(search)
+
+                            ||
+
+                            (
+                                driver.email ||
+                                ""
+                            )
+                            .toLowerCase()
+                            .includes(search)
+
+                            ||
+
+                            (
+                                driver.phone ||
+                                ""
+                            )
+                            .toLowerCase()
+                            .includes(search)
+
+                            ||
+
+                            (
+                                driver.license_number ||
+                                ""
+                            )
+                            .toLowerCase()
+                            .includes(search)
+
+                            ||
+
+                            (
+                                bus?.bus_number ||
+                                ""
+                            )
+                            .toLowerCase()
+                            .includes(search)
+
+                        );
+
+                    }
+                );
+
+
+            if (
+                !filtered.length
+            ) {
+
+                table.innerHTML = `
+
+                    <tr>
+
+                        <td
+                            colspan="6"
+                            class="empty"
+                        >
+                            No drivers found.
+                        </td>
+
+                    </tr>
+
+                `;
+
+                return;
+
+            }
+
+
+            table.innerHTML =
+                filtered
+                    .map(
+                        driver => {
+
+                            const bus =
+                                buses.find(
+                                    item =>
+                                        item.id ===
+                                        driver.bus_id
+                                );
+
+
+                            return `
+
+                                <tr>
+
+                                    <td>
+
+                                        <div
+                                            class="driver-name"
+                                        >
+                                            ${escapeHTML(
+                                                driver.full_name
+                                            )}
+                                        </div>
+
+                                        <div
+                                            class="driver-email"
+                                        >
+                                            ${escapeHTML(
+                                                driver.email ||
+                                                "No email"
+                                            )}
+                                        </div>
+
+                                    </td>
+
+
+                                    <td>
+
+                                        ${escapeHTML(
+                                            driver.phone ||
+                                            "—"
+                                        )}
+
+                                    </td>
+
+
+                                    <td>
+
+                                        ${escapeHTML(
+                                            driver.license_number ||
+                                            "—"
+                                        )}
+
+                                    </td>
+
+
+                                    <td>
+
+                                        <span
+                                            class="driver-bus"
+                                        >
+                                            ${escapeHTML(
+                                                bus?.bus_number ||
+                                                "Not assigned"
+                                            )}
+                                        </span>
+
+                                    </td>
+
+
+                                    <td>
+
+                                        <span
+                                            class="
+                                                driver-status
+                                                ${
+                                                    driver.is_active
+                                                        ? "driver-active"
+                                                        : "driver-inactive"
+                                                }
+                                            "
+                                        >
+                                            ${
+                                                driver.is_active
+                                                    ? "Active"
+                                                    : "Inactive"
+                                            }
+                                        </span>
+
+                                    </td>
+
+
+                                    <td>
+
+                                        <div
+                                            class="driver-actions"
+                                        >
+
+                                            <button
+                                                class="btn warning"
+                                                onclick="
+                                                    toggleDriver(
+                                                        '${driver.id}',
+                                                        ${driver.is_active}
+                                                    )
+                                                "
+                                            >
+                                                ${
+                                                    driver.is_active
+                                                        ? "Deactivate"
+                                                        : "Activate"
+                                                }
+                                            </button>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+                            `;
+
+                        }
+                    )
+                    .join("");
+
+        }
+
+
+        async function toggleDriver(
+            id,
+            currentStatus
+        ) {
+
+            const action =
+                currentStatus
+                    ? "deactivate"
+                    : "activate";
+
+
+            if (
+                !confirm(
+                    `Are you sure you want to ${action} this driver?`
+                )
+            ) {
+
+                return;
+
+            }
+
+
+            const {
+                error
+            } =
+                await supabaseClient
+                    .from("drivers")
+                    .update({
+
+                        is_active:
+                            !currentStatus
+
+                    })
+                    .eq(
+                        "id",
+                        id
+                    );
+
+
+            if (error) {
+
+                console.error(
+                    error
+                );
+
+                toast(
+                    error.message,
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            toast(
+                `Driver ${action}d successfully.`
+            );
+
+
+            await loadDrivers();
 
         }
 
@@ -2079,12 +4601,16 @@
                 await supabaseClient
                     .from("stops")
                     .insert({
+
                         stop_name:
                             name,
+
                         latitude:
                             selectedLat,
+
                         longitude:
                             selectedLng
+
                     });
 
 
@@ -2131,6 +4657,7 @@
             const filtered =
                 stops.filter(
                     stop =>
+
                         (
                             stop.stop_name ||
                             ""
@@ -2151,14 +4678,20 @@
             if (!filtered.length) {
 
                 table.innerHTML = `
+
                     <tr>
+
                         <td
                             colspan="5"
                             class="empty"
                         >
+
                             No stops found.
+
                         </td>
+
                     </tr>
+
                 `;
 
                 return;
@@ -2167,94 +4700,120 @@
 
             table.innerHTML =
                 filtered
-                .map(
-                    stop => `
+                    .map(
+                        stop => `
 
-                    <tr>
+                        <tr>
 
-                        <td>
-                            <strong>
-                                ${escapeHTML(
-                                    stop.stop_name
-                                )}
-                            </strong>
-                        </td>
 
-                        <td>
-                            ${Number(
-                                stop.latitude
-                            ).toFixed(6)}
-                        </td>
+                            <td>
 
-                        <td>
-                            ${Number(
-                                stop.longitude
-                            ).toFixed(6)}
-                        </td>
+                                <strong>
+                                    ${escapeHTML(
+                                        stop.stop_name
+                                    )}
+                                </strong>
 
-                        <td>
+                            </td>
 
-                            <span
-                                class="status ${
-                                    stop.is_active
-                                        ? "active"
-                                        : "inactive"
-                                }"
-                            >
-                                ${
-                                    stop.is_active
-                                        ? "Active"
-                                        : "Inactive"
-                                }
-                            </span>
 
-                        </td>
+                            <td>
 
-                        <td>
+                                ${Number(
+                                    stop.latitude
+                                ).toFixed(6)}
 
-                            <div class="actions">
+                            </td>
 
-                                <button
-                                    class="btn primary"
-                                    onclick="focusStop(
-                                        '${stop.id}'
-                                    )"
+
+                            <td>
+
+                                ${Number(
+                                    stop.longitude
+                                ).toFixed(6)}
+
+                            </td>
+
+
+                            <td>
+
+                                <span
+                                    class="status ${
+                                        stop.is_active
+                                            ? "active"
+                                            : "inactive"
+                                    }"
                                 >
-                                    Map
-                                </button>
 
-                                <button
-                                    class="btn warning"
-                                    onclick="toggleStop(
-                                        '${stop.id}',
-                                        ${stop.is_active}
-                                    )"
-                                >
                                     ${
                                         stop.is_active
-                                            ? "Deactivate"
-                                            : "Activate"
+                                            ? "Active"
+                                            : "Inactive"
                                     }
-                                </button>
 
-                                <button
-                                    class="btn danger"
-                                    onclick="deleteStop(
-                                        '${stop.id}'
-                                    )"
-                                >
-                                    Delete
-                                </button>
+                                </span>
 
-                            </div>
+                            </td>
 
-                        </td>
 
-                    </tr>
+                            <td>
 
-                `
-                )
-                .join("");
+                                <div class="actions">
+
+
+                                    <button
+                                        class="btn primary"
+                                        onclick="
+                                            focusStop(
+                                                '${stop.id}'
+                                            )
+                                        "
+                                    >
+                                        Map
+                                    </button>
+
+
+                                    <button
+                                        class="btn warning"
+                                        onclick="
+                                            toggleStop(
+                                                '${stop.id}',
+                                                ${stop.is_active}
+                                            )
+                                        "
+                                    >
+
+                                        ${
+                                            stop.is_active
+                                                ? "Deactivate"
+                                                : "Activate"
+                                        }
+
+                                    </button>
+
+
+                                    <button
+                                        class="btn danger"
+                                        onclick="
+                                            deleteStop(
+                                                '${stop.id}'
+                                            )
+                                        "
+                                    >
+                                        Delete
+                                    </button>
+
+
+                                </div>
+
+                            </td>
+
+
+                        </tr>
+
+                    `
+                    )
+                    .join("");
 
         }
 
@@ -2306,6 +4865,7 @@
                                     "",
 
                                 html: `
+
                                     <div
                                         style="
                                             width:28px;
@@ -2322,8 +4882,11 @@
                                             font-size:11px;
                                         "
                                     >
+
                                         ${selectedIndex + 1}
+
                                     </div>
+
                                 `,
 
                                 iconSize:
@@ -2349,6 +4912,7 @@
                                     "",
 
                                 html: `
+
                                     <div
                                         style="
                                             width:25px;
@@ -2359,6 +4923,7 @@
                                             box-shadow:0 2px 6px rgba(0,0,0,.3);
                                         "
                                     ></div>
+
                                 `,
 
                                 iconSize:
@@ -2495,7 +5060,9 @@
 
 
             if (!stop) {
+
                 return;
+
             }
 
 
@@ -2581,6 +5148,7 @@
 
             await loadStops();
 
+
             toast(
                 "Stop status updated."
             );
@@ -2597,7 +5165,9 @@
                     "Delete this stop? It may also be removed from routes."
                 )
             ) {
+
                 return;
+
             }
 
 
@@ -2626,14 +5196,13 @@
 
             await loadStops();
 
+
             toast(
                 "Stop deleted."
             );
 
         }
-
-
-        /* =====================================================
+                /* =====================================================
            ROUTE MODE
         ===================================================== */
 
@@ -2662,6 +5231,7 @@
 
                 selectedRouteStops =
                     [];
+
 
                 routeGeometry =
                     null;
@@ -2724,8 +5294,12 @@
             stop
         ) {
 
-            if (!routeMode) {
+            if (
+                !routeMode
+            ) {
+
                 return;
+
             }
 
 
@@ -2737,7 +5311,9 @@
                 );
 
 
-            if (exists) {
+            if (
+                exists
+            ) {
 
                 toast(
                     "This stop is already selected.",
@@ -2745,6 +5321,7 @@
                 );
 
                 return;
+
             }
 
 
@@ -2804,6 +5381,18 @@
             }
 
 
+            document.getElementById(
+                "distance"
+            ).textContent =
+                "—";
+
+
+            document.getElementById(
+                "duration"
+            ).textContent =
+                "—";
+
+
             updateRouteUI();
 
             renderStopMarkers();
@@ -2816,8 +5405,10 @@
             routeMode =
                 false;
 
+
             selectedRouteStops =
                 [];
+
 
             routeGeometry =
                 null;
@@ -2839,12 +5430,14 @@
 
             document.getElementById(
                 "routeName"
-            ).value = "";
+            ).value =
+                "";
 
 
             document.getElementById(
                 "routeDescription"
-            ).value = "";
+            ).value =
+                "";
 
 
             document.getElementById(
@@ -2932,17 +5525,23 @@
                                 ${index + 1}
                             </span>
 
+
                             <span class="selected-name">
+
                                 ${escapeHTML(
                                     stop.stop_name
                                 )}
+
                             </span>
+
 
                             <button
                                 class="remove"
-                                onclick="removeRouteStop(
-                                    ${index}
-                                )"
+                                onclick="
+                                    removeRouteStop(
+                                        ${index}
+                                    )
+                                "
                             >
                                 ×
                             </button>
@@ -2957,7 +5556,7 @@
 
 
         /* =====================================================
-           OSRM
+           OSRM ROAD ROUTING
         ===================================================== */
 
         async function generateRoute() {
@@ -2972,8 +5571,17 @@
                 );
 
                 return;
+
             }
 
+
+            /*
+             * OSRM expects coordinates in:
+             *
+             * longitude,latitude
+             *
+             * order.
+             */
 
             const coordinates =
                 selectedRouteStops
@@ -3033,6 +5641,11 @@
                     data.routes[0];
 
 
+                /*
+                 * Save the complete route
+                 * information temporarily.
+                 */
+
                 routeGeometry = {
 
                     geometry:
@@ -3047,6 +5660,10 @@
                 };
 
 
+                /*
+                 * Remove previous route line.
+                 */
+
                 if (
                     routeLayer
                 ) {
@@ -3057,6 +5674,10 @@
 
                 }
 
+
+                /*
+                 * Draw the road-following route.
+                 */
 
                 routeLayer =
                     L.geoJSON(
@@ -3072,6 +5693,10 @@
                     );
 
 
+                /*
+                 * Zoom map to route.
+                 */
+
                 map.fitBounds(
                     routeLayer.getBounds(),
                     {
@@ -3084,6 +5709,10 @@
                 );
 
 
+                /*
+                 * Show distance.
+                 */
+
                 document.getElementById(
                     "distance"
                 ).textContent =
@@ -3091,6 +5720,10 @@
                         route.distance
                     );
 
+
+                /*
+                 * Show estimated duration.
+                 */
 
                 document.getElementById(
                     "duration"
@@ -3112,6 +5745,7 @@
                     error
                 );
 
+
                 toast(
                     "Could not generate the road route.",
                     "error"
@@ -3121,6 +5755,10 @@
 
         }
 
+
+        /* =====================================================
+           FORMAT DISTANCE
+        ===================================================== */
 
         function formatDistance(
             meters
@@ -3143,6 +5781,10 @@
 
         }
 
+
+        /* =====================================================
+           FORMAT DURATION
+        ===================================================== */
 
         function formatDuration(
             seconds
@@ -3174,7 +5816,9 @@
 
 
             return remaining
+
                 ? `${hours} hr ${remaining} min`
+
                 : `${hours} hr`;
 
         }
@@ -3202,7 +5846,9 @@
                 .trim();
 
 
-            if (!name) {
+            if (
+                !name
+            ) {
 
                 toast(
                     "Enter a route name.",
@@ -3210,6 +5856,7 @@
                 );
 
                 return;
+
             }
 
 
@@ -3223,10 +5870,13 @@
                 );
 
                 return;
+
             }
 
 
-            if (!routeGeometry) {
+            if (
+                !routeGeometry
+            ) {
 
                 toast(
                     "Generate the road route first.",
@@ -3234,13 +5884,14 @@
                 );
 
                 return;
+
             }
 
 
             try {
 
                 /*
-                 * Create route
+                 * Create the route.
                  */
 
                 const {
@@ -3250,13 +5901,17 @@
                     await supabaseClient
                         .from("routes")
                         .insert({
+
                             route_name:
                                 name,
+
                             description:
                                 description ||
                                 null,
+
                             route_geometry:
                                 routeGeometry.geometry
+
                         })
                         .select()
                         .single();
@@ -3272,7 +5927,8 @@
 
 
                 /*
-                 * Create route-stop records
+                 * Create route-stop
+                 * relationships.
                  */
 
                 const rows =
@@ -3312,8 +5968,8 @@
                 ) {
 
                     /*
-                     * Roll back route
-                     * if route_stops fails.
+                     * Roll back the route if
+                     * route_stops insertion fails.
                      */
 
                     await supabaseClient
@@ -3337,6 +5993,7 @@
 
                 clearRouteBuilder();
 
+
                 await loadRoutes();
 
             } catch (
@@ -3346,6 +6003,7 @@
                 console.error(
                     error
                 );
+
 
                 toast(
                     error.message ||
@@ -3385,12 +6043,15 @@
                     error
                 );
 
+
                 toast(
                     "Could not load routes.",
                     "error"
                 );
 
+
                 return;
+
             }
 
 
@@ -3399,7 +6060,8 @@
 
 
             /*
-             * Get stop count
+             * Get the number of stops
+             * belonging to each route.
              */
 
             for (
@@ -3416,6 +6078,7 @@
                             {
                                 count:
                                     "exact",
+
                                 head:
                                     true
                             }
@@ -3435,6 +6098,14 @@
             renderRoutes();
 
             updateStats();
+
+
+            /*
+             * Routes have changed,
+             * so refresh assignment dropdown.
+             */
+
+            populateAssignmentDropdowns();
 
         }
 
@@ -3482,7 +6153,9 @@
                 );
 
 
-            if (!filtered.length) {
+            if (
+                !filtered.length
+            ) {
 
                 table.innerHTML = `
 
@@ -3492,7 +6165,9 @@
                             colspan="5"
                             class="empty"
                         >
+
                             No routes found.
+
                         </td>
 
                     </tr>
@@ -3500,6 +6175,7 @@
                 `;
 
                 return;
+
             }
 
 
@@ -3510,12 +6186,15 @@
 
                         <tr>
 
+
                             <td>
 
                                 <strong>
+
                                     ${escapeHTML(
                                         route.route_name
                                     )}
+
                                 </strong>
 
                             </td>
@@ -3547,11 +6226,13 @@
                                             : "inactive"
                                     }"
                                 >
+
                                     ${
                                         route.is_active
                                             ? "Active"
                                             : "Inactive"
                                     }
+
                                 </span>
 
                             </td>
@@ -3561,11 +6242,14 @@
 
                                 <div class="actions">
 
+
                                     <button
                                         class="btn primary"
-                                        onclick="viewRoute(
-                                            '${route.id}'
-                                        )"
+                                        onclick="
+                                            viewRoute(
+                                                '${route.id}'
+                                            )
+                                        "
                                     >
                                         View
                                     </button>
@@ -3573,31 +6257,39 @@
 
                                     <button
                                         class="btn warning"
-                                        onclick="toggleRoute(
-                                            '${route.id}',
-                                            ${route.is_active}
-                                        )"
+                                        onclick="
+                                            toggleRoute(
+                                                '${route.id}',
+                                                ${route.is_active}
+                                            )
+                                        "
                                     >
+
                                         ${
                                             route.is_active
                                                 ? "Deactivate"
                                                 : "Activate"
                                         }
+
                                     </button>
 
 
                                     <button
                                         class="btn danger"
-                                        onclick="deleteRoute(
-                                            '${route.id}'
-                                        )"
+                                        onclick="
+                                            deleteRoute(
+                                                '${route.id}'
+                                            )
+                                        "
                                     >
                                         Delete
                                     </button>
 
+
                                 </div>
 
                             </td>
+
 
                         </tr>
 
@@ -3607,6 +6299,10 @@
 
         }
 
+
+        /* =====================================================
+           VIEW ROUTE
+        ===================================================== */
 
         async function viewRoute(
             id
@@ -3630,6 +6326,7 @@
                 );
 
                 return;
+
             }
 
 
@@ -3677,6 +6374,10 @@
         }
 
 
+        /* =====================================================
+           TOGGLE ROUTE
+        ===================================================== */
+
         async function toggleRoute(
             id,
             status
@@ -3705,10 +6406,12 @@
                 );
 
                 return;
+
             }
 
 
             await loadRoutes();
+
 
             toast(
                 "Route status updated."
@@ -3716,6 +6419,10 @@
 
         }
 
+
+        /* =====================================================
+           DELETE ROUTE
+        ===================================================== */
 
         async function deleteRoute(
             id
@@ -3726,7 +6433,9 @@
                     "Delete this route?"
                 )
             ) {
+
                 return;
+
             }
 
 
@@ -3750,10 +6459,12 @@
                 );
 
                 return;
+
             }
 
 
             await loadRoutes();
+
 
             toast(
                 "Route deleted."
@@ -3798,14 +6509,16 @@
 
 
         /* =====================================================
-           START
+           START APPLICATION
         ===================================================== */
 
         async function startApp() {
 
             initializeMap();
 
+
             await loadData();
+
 
             renderStopMarkers();
 
@@ -3819,3 +6532,6 @@
 </body>
 
 </html>
+
+
+
