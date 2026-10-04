@@ -25,6 +25,9 @@ exports.handler = async (event) => {
         if (!supabaseUrl || !serviceRoleKey) {
             return {
                 statusCode: 500,
+                headers: {
+                    "Content-Type": "application/json"
+                },
                 body: JSON.stringify({
                     error: "Supabase environment variables are missing"
                 })
@@ -42,6 +45,9 @@ exports.handler = async (event) => {
         if (!authHeader || !authHeader.startsWith("Bearer ")) {
             return {
                 statusCode: 401,
+                headers: {
+                    "Content-Type": "application/json"
+                },
                 body: JSON.stringify({
                     error: "Missing authorization token"
                 })
@@ -77,6 +83,9 @@ exports.handler = async (event) => {
         if (userError || !user) {
             return {
                 statusCode: 401,
+                headers: {
+                    "Content-Type": "application/json"
+                },
                 body: JSON.stringify({
                     error: "Invalid authentication token"
                 })
@@ -103,6 +112,9 @@ exports.handler = async (event) => {
         ) {
             return {
                 statusCode: 403,
+                headers: {
+                    "Content-Type": "application/json"
+                },
                 body: JSON.stringify({
                     error: "Only admins can create drivers"
                 })
@@ -117,9 +129,12 @@ exports.handler = async (event) => {
 
         try {
             body = JSON.parse(event.body || "{}");
-        } catch {
+        } catch (error) {
             return {
                 statusCode: 400,
+                headers: {
+                    "Content-Type": "application/json"
+                },
                 body: JSON.stringify({
                     error: "Invalid JSON body"
                 })
@@ -142,6 +157,9 @@ exports.handler = async (event) => {
         if (!full_name || !email || !password) {
             return {
                 statusCode: 400,
+                headers: {
+                    "Content-Type": "application/json"
+                },
                 body: JSON.stringify({
                     error: "Full name, email and password are required"
                 })
@@ -151,6 +169,9 @@ exports.handler = async (event) => {
         if (password.length < 6) {
             return {
                 statusCode: 400,
+                headers: {
+                    "Content-Type": "application/json"
+                },
                 body: JSON.stringify({
                     error: "Password must be at least 6 characters"
                 })
@@ -167,6 +188,9 @@ exports.handler = async (event) => {
         if (!emailRegex.test(email)) {
             return {
                 statusCode: 400,
+                headers: {
+                    "Content-Type": "application/json"
+                },
                 body: JSON.stringify({
                     error: "Invalid email address"
                 })
@@ -190,6 +214,9 @@ exports.handler = async (event) => {
             if (busError || !bus) {
                 return {
                     statusCode: 400,
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
                     body: JSON.stringify({
                         error: "Selected bus does not exist"
                     })
@@ -199,6 +226,9 @@ exports.handler = async (event) => {
             if (!bus.is_active) {
                 return {
                     statusCode: 400,
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
                     body: JSON.stringify({
                         error: "Selected bus is inactive"
                     })
@@ -222,6 +252,9 @@ exports.handler = async (event) => {
         if (authError) {
             return {
                 statusCode: 400,
+                headers: {
+                    "Content-Type": "application/json"
+                },
                 body: JSON.stringify({
                     error: authError.message
                 })
@@ -248,8 +281,12 @@ exports.handler = async (event) => {
 
             return {
                 statusCode: 500,
+                headers: {
+                    "Content-Type": "application/json"
+                },
                 body: JSON.stringify({
-                    error: "Failed to create driver profile"
+                    error: "Failed to create driver profile",
+                    details: profileInsertError.message
                 })
             };
         }
@@ -289,8 +326,12 @@ exports.handler = async (event) => {
 
             return {
                 statusCode: 500,
+                headers: {
+                    "Content-Type": "application/json"
+                },
                 body: JSON.stringify({
-                    error: driverError.message
+                    error: "Failed to create driver record",
+                    details: driverError.message
                 })
             };
         }
@@ -320,7 +361,8 @@ exports.handler = async (event) => {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                error: "Internal server error"
+                error: "Internal server error",
+                details: error.message
             })
         };
     }
