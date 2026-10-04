@@ -1,0 +1,3821 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>UniBus Admin Dashboard</title>
+
+    <!-- Leaflet -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+
+    <style>
+        /* =====================================================
+           RESET
+        ===================================================== */
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background: #f5f7fb;
+            color: #111827;
+        }
+
+        button,
+        input,
+        textarea {
+            font-family: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+
+        /* =====================================================
+           HEADER
+        ===================================================== */
+
+        .header {
+            height: 68px;
+
+            background: #111827;
+            color: white;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 25px;
+
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+
+            box-shadow:
+                0 2px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+
+            background: #2563eb;
+
+            border-radius: 10px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 21px;
+        }
+
+        .logo h1 {
+            font-size: 19px;
+        }
+
+        .logo small {
+            color: #9ca3af;
+            font-size: 11px;
+        }
+
+        .admin-badge {
+            background: #2563eb;
+            padding: 8px 13px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+
+        /* =====================================================
+           LAYOUT
+        ===================================================== */
+
+        .container {
+            max-width: 1450px;
+            margin: auto;
+            padding: 25px;
+        }
+
+        .page-heading {
+            margin-bottom: 22px;
+        }
+
+        .page-heading h2 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .page-heading p {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+
+        /* =====================================================
+           STATS
+        ===================================================== */
+
+        .stats {
+            display: grid;
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 16px;
+
+            margin-bottom: 22px;
+        }
+
+        .stat {
+            background: white;
+
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+
+            padding: 18px;
+
+            display: flex;
+            align-items: center;
+            gap: 13px;
+
+            box-shadow:
+                0 3px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        .stat-icon {
+            width: 45px;
+            height: 45px;
+
+            border-radius: 11px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 21px;
+        }
+
+        .stat-icon.blue {
+            background: #dbeafe;
+        }
+
+        .stat-icon.green {
+            background: #dcfce7;
+        }
+
+        .stat-icon.orange {
+            background: #ffedd5;
+        }
+
+        .stat-icon.purple {
+            background: #ede9fe;
+        }
+
+        .stat strong {
+            display: block;
+            font-size: 23px;
+        }
+
+        .stat span {
+            color: #6b7280;
+            font-size: 12px;
+        }
+
+
+        /* =====================================================
+           CARD
+        ===================================================== */
+
+        .card {
+            background: white;
+
+            border: 1px solid #e5e7eb;
+            border-radius: 15px;
+
+            margin-bottom: 22px;
+
+            overflow: hidden;
+
+            box-shadow:
+                0 3px 12px rgba(0, 0, 0, 0.04);
+        }
+
+        .card-header {
+            padding: 18px 21px;
+
+            border-bottom: 1px solid #e5e7eb;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 15px;
+        }
+
+        .card-header h3 {
+            font-size: 18px;
+        }
+
+        .card-header p {
+            color: #6b7280;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+
+        /* =====================================================
+           FORMS
+        ===================================================== */
+
+        .form-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 15px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .field.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #374151;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+
+            border: 1px solid #d1d5db;
+
+            border-radius: 8px;
+
+            padding: 10px 11px;
+
+            outline: none;
+
+            font-size: 13px;
+
+            background: white;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: #2563eb;
+
+            box-shadow:
+                0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        textarea {
+            min-height: 75px;
+            resize: vertical;
+        }
+
+
+        /* =====================================================
+           BUTTONS
+        ===================================================== */
+
+        .buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+
+            margin-top: 14px;
+        }
+
+        .btn {
+            border: none;
+
+            border-radius: 8px;
+
+            padding: 9px 13px;
+
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .primary {
+            background: #2563eb;
+            color: white;
+        }
+
+        .primary:hover {
+            background: #1d4ed8;
+        }
+
+        .success {
+            background: #16a34a;
+            color: white;
+        }
+
+        .warning {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .danger {
+            background: #dc2626;
+            color: white;
+        }
+
+        .secondary {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .dark {
+            background: #111827;
+            color: white;
+        }
+
+
+        /* =====================================================
+           TOOLBAR
+        ===================================================== */
+
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 10px;
+
+            margin-bottom: 15px;
+        }
+
+        .search {
+            max-width: 300px;
+        }
+
+
+        /* =====================================================
+           TABLE
+        ===================================================== */
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 12px;
+
+            border-bottom: 1px solid #e5e7eb;
+
+            text-align: left;
+
+            font-size: 12px;
+        }
+
+        th {
+            background: #f9fafb;
+
+            color: #6b7280;
+
+            font-size: 10px;
+
+            text-transform: uppercase;
+        }
+
+        tr:hover td {
+            background: #fafafa;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .actions .btn {
+            padding: 6px 8px;
+            font-size: 10px;
+        }
+
+
+        /* =====================================================
+           STATUS
+        ===================================================== */
+
+        .status {
+            display: inline-block;
+
+            padding: 4px 8px;
+
+            border-radius: 20px;
+
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .inactive {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+
+        /* =====================================================
+           MAP
+        ===================================================== */
+
+        #map {
+            width: 100%;
+            height: 540px;
+
+            border-radius: 12px;
+
+            border: 1px solid #d1d5db;
+
+            z-index: 1;
+        }
+
+        .map-help {
+            background: #eff6ff;
+
+            border: 1px solid #bfdbfe;
+
+            color: #1e40af;
+
+            padding: 11px 13px;
+
+            border-radius: 8px;
+
+            font-size: 12px;
+
+            margin-bottom: 12px;
+        }
+
+
+        /* =====================================================
+           ROUTE PANEL
+        ===================================================== */
+
+        .route-layout {
+            display: grid;
+
+            grid-template-columns:
+                1fr 320px;
+
+            gap: 18px;
+        }
+
+        .route-panel {
+            background: #f9fafb;
+
+            border: 1px solid #e5e7eb;
+
+            border-radius: 12px;
+
+            padding: 16px;
+
+            height: fit-content;
+        }
+
+        .route-panel h4 {
+            margin-bottom: 13px;
+        }
+
+        .route-stat {
+            background: white;
+
+            border: 1px solid #e5e7eb;
+
+            border-radius: 8px;
+
+            padding: 10px;
+
+            margin-top: 9px;
+        }
+
+        .route-stat span {
+            display: block;
+
+            color: #6b7280;
+
+            font-size: 10px;
+
+            margin-bottom: 4px;
+        }
+
+        .route-stat strong {
+            font-size: 15px;
+        }
+
+
+        /* =====================================================
+           SELECTED STOPS
+        ===================================================== */
+
+        .selected-list {
+            list-style: none;
+
+            margin-top: 10px;
+
+            max-height: 260px;
+
+            overflow-y: auto;
+        }
+
+        .selected-list li {
+            background: white;
+
+            border: 1px solid #e5e7eb;
+
+            border-radius: 8px;
+
+            padding: 8px;
+
+            margin-bottom: 6px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+        }
+
+        .number {
+            width: 24px;
+            height: 24px;
+
+            border-radius: 50%;
+
+            background: #2563eb;
+
+            color: white;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            font-size: 10px;
+
+            font-weight: bold;
+
+            flex-shrink: 0;
+        }
+
+        .selected-name {
+            flex: 1;
+
+            font-size: 11px;
+        }
+
+        .remove {
+            background: #fee2e2;
+
+            color: #991b1b;
+
+            border: none;
+
+            border-radius: 5px;
+
+            padding: 4px 7px;
+
+            cursor: pointer;
+        }
+
+
+        /* =====================================================
+           EMPTY
+        ===================================================== */
+
+        .empty {
+            text-align: center;
+
+            padding: 25px;
+
+            color: #6b7280;
+
+            font-size: 12px;
+        }
+
+
+        /* =====================================================
+           TOAST
+        ===================================================== */
+
+        #toast {
+            position: fixed;
+
+            right: 20px;
+            bottom: 20px;
+
+            z-index: 9999;
+        }
+
+        .toast-message {
+            background: #111827;
+
+            color: white;
+
+            padding: 13px 16px;
+
+            border-radius: 9px;
+
+            margin-top: 8px;
+
+            min-width: 250px;
+
+            font-size: 12px;
+
+            box-shadow:
+                0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .toast-success {
+            border-left: 4px solid #22c55e;
+        }
+
+        .toast-error {
+            border-left: 4px solid #ef4444;
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 1000px) {
+
+            .stats {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .route-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 650px) {
+
+            .header {
+                padding: 0 15px;
+            }
+
+            .admin-badge {
+                display: none;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .field.full {
+                grid-column: auto;
+            }
+
+            #map {
+                height: 430px;
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+
+    <!-- =====================================================
+         HEADER
+    ===================================================== -->
+
+    <header class="header">
+
+        <div class="logo">
+
+            <div class="logo-icon">
+                🚌
+            </div>
+
+            <div>
+                <h1>UniBus</h1>
+                <small>Administration Portal</small>
+            </div>
+
+        </div>
+
+        <div class="admin-badge">
+            Administrator
+        </div>
+
+    </header>
+
+
+    <main class="container">
+
+
+        <!-- =================================================
+             PAGE TITLE
+        ================================================= -->
+
+        <div class="page-heading">
+
+            <h2>Admin Dashboard</h2>
+
+            <p>
+                Manage buses, stops and routes from one place.
+            </p>
+
+        </div>
+
+
+        <!-- =================================================
+             STATISTICS
+        ================================================= -->
+
+        <div class="stats">
+
+            <div class="stat">
+
+                <div class="stat-icon blue">
+                    🚌
+                </div>
+
+                <div>
+                    <strong id="totalBuses">0</strong>
+                    <span>Total Buses</span>
+                </div>
+
+            </div>
+
+
+            <div class="stat">
+
+                <div class="stat-icon green">
+                    ✓
+                </div>
+
+                <div>
+                    <strong id="activeBuses">0</strong>
+                    <span>Active Buses</span>
+                </div>
+
+            </div>
+
+
+            <div class="stat">
+
+                <div class="stat-icon orange">
+                    📍
+                </div>
+
+                <div>
+                    <strong id="totalStops">0</strong>
+                    <span>Total Stops</span>
+                </div>
+
+            </div>
+
+
+            <div class="stat">
+
+                <div class="stat-icon purple">
+                    🛣️
+                </div>
+
+                <div>
+                    <strong id="totalRoutes">0</strong>
+                    <span>Total Routes</span>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             BUS MANAGEMENT
+        ================================================= -->
+
+        <section class="card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <h3>🚌 Bus Management</h3>
+
+                    <p>
+                        Add and manage UniBus vehicles.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="card-body">
+
+
+                <div class="form-grid">
+
+                    <div class="field">
+
+                        <label>
+                            Bus Number
+                        </label>
+
+                        <input
+                            id="busNumber"
+                            type="text"
+                            placeholder="BUS-01"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label>
+                            Bus Name
+                        </label>
+
+                        <input
+                            id="busName"
+                            type="text"
+                            placeholder="Campus Express"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="buttons">
+
+                    <button
+                        class="btn primary"
+                        onclick="addBus()"
+                    >
+                        + Add Bus
+                    </button>
+
+                </div>
+
+
+                <div
+                    class="toolbar"
+                    style="margin-top:20px;"
+                >
+
+                    <input
+                        id="busSearch"
+                        class="search"
+                        type="text"
+                        placeholder="Search buses..."
+                        oninput="renderBuses()"
+                    >
+
+                </div>
+
+
+                <div class="table-wrap">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>Number</th>
+                                <th>Name</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="busTable"></tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             STOP + ROUTE MAP
+        ================================================= -->
+
+        <section class="card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <h3>📍 Stops & Route Builder</h3>
+
+                    <p>
+                        Create stops and build road-following routes.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="card-body">
+
+
+                <div class="map-help">
+
+                    <strong>Normal mode:</strong>
+                    click the map to select a location and create a stop.
+
+                    <br><br>
+
+                    <strong>Route mode:</strong>
+                    click <strong>Select Stops</strong>, then click existing
+                    stop markers in the order the bus should travel.
+
+                </div>
+
+
+                <!-- MAP -->
+
+                <div id="map"></div>
+
+
+                <!-- STOP FORM -->
+
+                <div
+                    class="form-grid"
+                    style="margin-top:18px;"
+                >
+
+                    <div class="field">
+
+                        <label>
+                            Stop Name
+                        </label>
+
+                        <input
+                            id="stopName"
+                            type="text"
+                            placeholder="Main Gate"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label>
+                            Selected Location
+                        </label>
+
+                        <input
+                            id="coordinates"
+                            type="text"
+                            readonly
+                            placeholder="Click map"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="buttons">
+
+                    <button
+                        class="btn primary"
+                        onclick="addStop()"
+                    >
+                        + Add Stop
+                    </button>
+
+                    <button
+                        class="btn secondary"
+                        onclick="clearMapSelection()"
+                    >
+                        Clear Location
+                    </button>
+
+                    <button
+                        class="btn dark"
+                        onclick="showAllStops()"
+                    >
+                        Show All Stops
+                    </button>
+
+                </div>
+
+
+                <!-- =================================================
+                     ROUTE BUILDER
+                ================================================= -->
+
+                <div
+                    style="
+                        margin-top:30px;
+                        border-top:1px solid #e5e7eb;
+                        padding-top:25px;
+                    "
+                >
+
+                    <div
+                        class="route-layout"
+                    >
+
+
+                        <!-- ROUTE FORM -->
+
+                        <div>
+
+                            <h3
+                                style="
+                                    margin-bottom:15px;
+                                    font-size:17px;
+                                "
+                            >
+                                🛣️ Route Builder
+                            </h3>
+
+
+                            <div class="form-grid">
+
+                                <div class="field">
+
+                                    <label>
+                                        Route Name
+                                    </label>
+
+                                    <input
+                                        id="routeName"
+                                        type="text"
+                                        placeholder="Campus - Uttara"
+                                    >
+
+                                </div>
+
+
+                                <div class="field">
+
+                                    <label>
+                                        Description
+                                    </label>
+
+                                    <input
+                                        id="routeDescription"
+                                        type="text"
+                                        placeholder="Main campus route"
+                                    >
+
+                                </div>
+
+                            </div>
+
+
+                            <div class="buttons">
+
+                                <button
+                                    id="routeModeButton"
+                                    class="btn primary"
+                                    onclick="startRouteMode()"
+                                >
+                                    📍 Select Stops
+                                </button>
+
+
+                                <button
+                                    class="btn secondary"
+                                    onclick="clearRouteBuilder()"
+                                >
+                                    Clear Route
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- ROUTE INFO -->
+
+                        <div class="route-panel">
+
+                            <h4>
+                                Route Information
+                            </h4>
+
+
+                            <div class="route-stat">
+
+                                <span>
+                                    Selected Stops
+                                </span>
+
+                                <strong id="selectedCount">
+                                    0
+                                </strong>
+
+                            </div>
+
+
+                            <div class="route-stat">
+
+                                <span>
+                                    Road Distance
+                                </span>
+
+                                <strong id="distance">
+                                    —
+                                </strong>
+
+                            </div>
+
+
+                            <div class="route-stat">
+
+                                <span>
+                                    Estimated Time
+                                </span>
+
+                                <strong id="duration">
+                                    —
+                                </strong>
+
+                            </div>
+
+
+                            <h4
+                                style="
+                                    margin-top:18px;
+                                    margin-bottom:8px;
+                                "
+                            >
+                                Stop Order
+                            </h4>
+
+
+                            <ul
+                                id="selectedStops"
+                                class="selected-list"
+                            >
+
+                                <li>
+
+                                    <span
+                                        style="
+                                            color:#6b7280;
+                                            font-size:11px;
+                                        "
+                                    >
+                                        No stops selected.
+                                    </span>
+
+                                </li>
+
+                            </ul>
+
+
+                            <div class="buttons">
+
+                                <button
+                                    class="btn success"
+                                    onclick="generateRoute()"
+                                >
+                                    🛣️ Generate Road Route
+                                </button>
+
+
+                                <button
+                                    class="btn primary"
+                                    onclick="saveRoute()"
+                                >
+                                    💾 Save Route
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     STOP LIST
+                ================================================= -->
+
+                <div
+                    style="
+                        margin-top:30px;
+                        border-top:1px solid #e5e7eb;
+                        padding-top:25px;
+                    "
+                >
+
+                    <div class="toolbar">
+
+                        <div>
+
+                            <h3
+                                style="
+                                    font-size:16px;
+                                    margin-bottom:4px;
+                                "
+                            >
+                                Saved Stops
+                            </h3>
+
+                        </div>
+
+
+                        <input
+                            id="stopSearch"
+                            class="search"
+                            type="text"
+                            placeholder="Search stops..."
+                            oninput="renderStops()"
+                        >
+
+                    </div>
+
+
+                    <div class="table-wrap">
+
+                        <table>
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>Stop</th>
+                                    <th>Latitude</th>
+                                    <th>Longitude</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+
+                                </tr>
+
+                            </thead>
+
+                            <tbody id="stopTable"></tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             ROUTES
+        ================================================= -->
+
+        <section class="card">
+
+            <div class="card-header">
+
+                <div>
+
+                    <h3>🛣️ Saved Routes</h3>
+
+                    <p>
+                        View and manage your existing routes.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="card-body">
+
+
+                <div class="toolbar">
+
+                    <input
+                        id="routeSearch"
+                        class="search"
+                        type="text"
+                        placeholder="Search routes..."
+                        oninput="renderRoutes()"
+                    >
+
+                </div>
+
+
+                <div class="table-wrap">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>Route</th>
+                                <th>Description</th>
+                                <th>Stops</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="routeTable"></tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- TOAST -->
+
+    <div id="toast"></div>
+
+
+    <!-- =====================================================
+         LIBRARIES
+    ===================================================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="../auth-guard.js"></script>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+
+    <script>
+
+        /* =====================================================
+           AUTH
+        ===================================================== */
+
+        protectPage("admin");
+
+
+        /* =====================================================
+           DATA
+        ===================================================== */
+
+        let buses = [];
+        let stops = [];
+        let routes = [];
+
+        let map;
+
+        let temporaryMarker = null;
+
+        let selectedLat = null;
+        let selectedLng = null;
+
+        let stopMarkers = [];
+
+        let routeMode = false;
+
+        let selectedRouteStops = [];
+
+        let routeLayer = null;
+
+        let routeGeometry = null;
+
+
+        /* =====================================================
+           TOAST
+        ===================================================== */
+
+        function toast(
+            message,
+            type = "success"
+        ) {
+
+            const container =
+                document.getElementById(
+                    "toast"
+                );
+
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+
+            item.className =
+                `toast-message ${
+                    type === "error"
+                        ? "toast-error"
+                        : "toast-success"
+                }`;
+
+
+            item.textContent =
+                message;
+
+
+            container.appendChild(
+                item
+            );
+
+
+            setTimeout(
+                () => item.remove(),
+                3500
+            );
+
+        }
+
+
+        /* =====================================================
+           ESCAPE HTML
+        ===================================================== */
+
+        function escapeHTML(
+            value
+        ) {
+
+            return String(
+                value ?? ""
+            )
+            .replace(
+                /&/g,
+                "&amp;"
+            )
+            .replace(
+                /</g,
+                "&lt;"
+            )
+            .replace(
+                />/g,
+                "&gt;"
+            )
+            .replace(
+                /"/g,
+                "&quot;"
+            )
+            .replace(
+                /'/g,
+                "&#039;"
+            );
+
+        }
+
+
+        /* =====================================================
+           MAP
+        ===================================================== */
+
+        function initializeMap() {
+
+            map =
+                L.map(
+                    "map"
+                )
+                .setView(
+                    [
+                        23.8103,
+                        90.4125
+                    ],
+                    13
+                );
+
+
+            L.tileLayer(
+                "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+                    maxZoom: 19,
+                    attribution:
+                        "&copy; OpenStreetMap contributors"
+                }
+            ).addTo(
+                map
+            );
+
+
+            map.on(
+                "click",
+                event => {
+
+                    /*
+                     * When route mode is active,
+                     * map clicks do NOT create stops.
+                     */
+
+                    if (routeMode) {
+                        return;
+                    }
+
+
+                    selectedLat =
+                        event.latlng.lat;
+
+
+                    selectedLng =
+                        event.latlng.lng;
+
+
+                    document.getElementById(
+                        "coordinates"
+                    ).value =
+                        `${selectedLat.toFixed(6)}, ${selectedLng.toFixed(6)}`;
+
+
+                    if (
+                        temporaryMarker
+                    ) {
+
+                        map.removeLayer(
+                            temporaryMarker
+                        );
+
+                    }
+
+
+                    temporaryMarker =
+                        L.marker(
+                            [
+                                selectedLat,
+                                selectedLng
+                            ]
+                        )
+                        .addTo(
+                            map
+                        )
+                        .bindPopup(
+                            "Selected location"
+                        )
+                        .openPopup();
+
+                }
+            );
+
+
+            /*
+             * Important for Leaflet when
+             * map is inside a dynamic layout.
+             */
+
+            setTimeout(
+                () => {
+
+                    map.invalidateSize();
+
+                },
+                300
+            );
+
+        }
+
+
+        /* =====================================================
+           LOAD EVERYTHING
+        ===================================================== */
+
+        async function loadData() {
+
+            await loadBuses();
+
+            await loadStops();
+
+            await loadRoutes();
+
+        }
+
+
+        /* =====================================================
+           BUS
+        ===================================================== */
+
+        async function loadBuses() {
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+                    .from("buses")
+                    .select("*")
+                    .order(
+                        "created_at",
+                        {
+                            ascending: false
+                        }
+                    );
+
+
+            if (error) {
+
+                console.error(
+                    error
+                );
+
+                toast(
+                    "Could not load buses.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            buses =
+                data || [];
+
+
+            renderBuses();
+
+            updateStats();
+
+        }
+
+
+        async function addBus() {
+
+            const number =
+                document.getElementById(
+                    "busNumber"
+                )
+                .value
+                .trim();
+
+
+            const name =
+                document.getElementById(
+                    "busName"
+                )
+                .value
+                .trim();
+
+
+            if (!number) {
+
+                toast(
+                    "Enter a bus number.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            const {
+                error
+            } =
+                await supabaseClient
+                    .from("buses")
+                    .insert({
+                        bus_number:
+                            number,
+                        bus_name:
+                            name || null
+                    });
+
+
+            if (error) {
+
+                toast(
+                    error.message,
+                    "error"
+                );
+
+                return;
+            }
+
+
+            document.getElementById(
+                "busNumber"
+            ).value = "";
+
+
+            document.getElementById(
+                "busName"
+            ).value = "";
+
+
+            toast(
+                "Bus added successfully."
+            );
+
+
+            await loadBuses();
+
+        }
+
+
+        function renderBuses() {
+
+            const search =
+                document.getElementById(
+                    "busSearch"
+                )
+                .value
+                .trim()
+                .toLowerCase();
+
+
+            const filtered =
+                buses.filter(
+                    bus =>
+
+                        (
+                            bus.bus_number ||
+                            ""
+                        )
+                        .toLowerCase()
+                        .includes(
+                            search
+                        )
+
+                        ||
+
+                        (
+                            bus.bus_name ||
+                            ""
+                        )
+                        .toLowerCase()
+                        .includes(
+                            search
+                        )
+                );
+
+
+            const table =
+                document.getElementById(
+                    "busTable"
+                );
+
+
+            if (!filtered.length) {
+
+                table.innerHTML = `
+                    <tr>
+                        <td
+                            colspan="4"
+                            class="empty"
+                        >
+                            No buses found.
+                        </td>
+                    </tr>
+                `;
+
+                return;
+            }
+
+
+            table.innerHTML =
+                filtered
+                .map(
+                    bus => `
+
+                    <tr>
+
+                        <td>
+                            <strong>
+                                ${escapeHTML(
+                                    bus.bus_number
+                                )}
+                            </strong>
+                        </td>
+
+                        <td>
+                            ${escapeHTML(
+                                bus.bus_name ||
+                                "—"
+                            )}
+                        </td>
+
+                        <td>
+
+                            <span
+                                class="status ${
+                                    bus.is_active
+                                        ? "active"
+                                        : "inactive"
+                                }"
+                            >
+                                ${
+                                    bus.is_active
+                                        ? "Active"
+                                        : "Inactive"
+                                }
+                            </span>
+
+                        </td>
+
+                        <td>
+
+                            <div class="actions">
+
+                                <button
+                                    class="btn warning"
+                                    onclick="toggleBus(
+                                        '${bus.id}',
+                                        ${bus.is_active}
+                                    )"
+                                >
+                                    ${
+                                        bus.is_active
+                                            ? "Deactivate"
+                                            : "Activate"
+                                    }
+                                </button>
+
+                                <button
+                                    class="btn danger"
+                                    onclick="deleteBus(
+                                        '${bus.id}'
+                                    )"
+                                >
+                                    Delete
+                                </button>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                `
+                )
+                .join("");
+
+        }
+
+
+        async function toggleBus(
+            id,
+            status
+        ) {
+
+            const {
+                error
+            } =
+                await supabaseClient
+                    .from("buses")
+                    .update({
+                        is_active:
+                            !status
+                    })
+                    .eq(
+                        "id",
+                        id
+                    );
+
+
+            if (error) {
+
+                toast(
+                    error.message,
+                    "error"
+                );
+
+                return;
+            }
+
+
+            await loadBuses();
+
+            toast(
+                "Bus status updated."
+            );
+
+        }
+
+
+        async function deleteBus(
+            id
+        ) {
+
+            if (
+                !confirm(
+                    "Delete this bus?"
+                )
+            ) {
+                return;
+            }
+
+
+            const {
+                error
+            } =
+                await supabaseClient
+                    .from("buses")
+                    .delete()
+                    .eq(
+                        "id",
+                        id
+                    );
+
+
+            if (error) {
+
+                toast(
+                    error.message,
+                    "error"
+                );
+
+                return;
+            }
+
+
+            await loadBuses();
+
+            toast(
+                "Bus deleted."
+            );
+
+        }
+
+
+        /* =====================================================
+           STOPS
+        ===================================================== */
+
+        async function loadStops() {
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+                    .from("stops")
+                    .select("*")
+                    .order(
+                        "stop_name",
+                        {
+                            ascending: true
+                        }
+                    );
+
+
+            if (error) {
+
+                console.error(
+                    error
+                );
+
+                toast(
+                    "Could not load stops.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            stops =
+                data || [];
+
+
+            renderStops();
+
+            renderStopMarkers();
+
+            updateStats();
+
+        }
+
+
+        async function addStop() {
+
+            const name =
+                document.getElementById(
+                    "stopName"
+                )
+                .value
+                .trim();
+
+
+            if (!name) {
+
+                toast(
+                    "Enter a stop name.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            if (
+                selectedLat === null ||
+                selectedLng === null
+            ) {
+
+                toast(
+                    "Click the map to select a location.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            const {
+                error
+            } =
+                await supabaseClient
+                    .from("stops")
+                    .insert({
+                        stop_name:
+                            name,
+                        latitude:
+                            selectedLat,
+                        longitude:
+                            selectedLng
+                    });
+
+
+            if (error) {
+
+                toast(
+                    error.message,
+                    "error"
+                );
+
+                return;
+            }
+
+
+            document.getElementById(
+                "stopName"
+            ).value = "";
+
+
+            clearMapSelection();
+
+
+            await loadStops();
+
+
+            toast(
+                "Stop added successfully."
+            );
+
+        }
+
+
+        function renderStops() {
+
+            const search =
+                document.getElementById(
+                    "stopSearch"
+                )
+                .value
+                .trim()
+                .toLowerCase();
+
+
+            const filtered =
+                stops.filter(
+                    stop =>
+                        (
+                            stop.stop_name ||
+                            ""
+                        )
+                        .toLowerCase()
+                        .includes(
+                            search
+                        )
+                );
+
+
+            const table =
+                document.getElementById(
+                    "stopTable"
+                );
+
+
+            if (!filtered.length) {
+
+                table.innerHTML = `
+                    <tr>
+                        <td
+                            colspan="5"
+                            class="empty"
+                        >
+                            No stops found.
+                        </td>
+                    </tr>
+                `;
+
+                return;
+            }
+
+
+            table.innerHTML =
+                filtered
+                .map(
+                    stop => `
+
+                    <tr>
+
+                        <td>
+                            <strong>
+                                ${escapeHTML(
+                                    stop.stop_name
+                                )}
+                            </strong>
+                        </td>
+
+                        <td>
+                            ${Number(
+                                stop.latitude
+                            ).toFixed(6)}
+                        </td>
+
+                        <td>
+                            ${Number(
+                                stop.longitude
+                            ).toFixed(6)}
+                        </td>
+
+                        <td>
+
+                            <span
+                                class="status ${
+                                    stop.is_active
+                                        ? "active"
+                                        : "inactive"
+                                }"
+                            >
+                                ${
+                                    stop.is_active
+                                        ? "Active"
+                                        : "Inactive"
+                                }
+                            </span>
+
+                        </td>
+
+                        <td>
+
+                            <div class="actions">
+
+                                <button
+                                    class="btn primary"
+                                    onclick="focusStop(
+                                        '${stop.id}'
+                                    )"
+                                >
+                                    Map
+                                </button>
+
+                                <button
+                                    class="btn warning"
+                                    onclick="toggleStop(
+                                        '${stop.id}',
+                                        ${stop.is_active}
+                                    )"
+                                >
+                                    ${
+                                        stop.is_active
+                                            ? "Deactivate"
+                                            : "Activate"
+                                    }
+                                </button>
+
+                                <button
+                                    class="btn danger"
+                                    onclick="deleteStop(
+                                        '${stop.id}'
+                                    )"
+                                >
+                                    Delete
+                                </button>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                `
+                )
+                .join("");
+
+        }
+
+
+        /* =====================================================
+           STOP MARKERS
+        ===================================================== */
+
+        function renderStopMarkers() {
+
+            stopMarkers.forEach(
+                marker => {
+
+                    map.removeLayer(
+                        marker
+                    );
+
+                }
+            );
+
+
+            stopMarkers = [];
+
+
+            stops.forEach(
+                stop => {
+
+                    const selectedIndex =
+                        selectedRouteStops
+                            .findIndex(
+                                selected =>
+                                    selected.id ===
+                                    stop.id
+                            );
+
+
+                    let icon;
+
+
+                    if (
+                        routeMode &&
+                        selectedIndex !== -1
+                    ) {
+
+                        icon =
+                            L.divIcon({
+
+                                className:
+                                    "",
+
+                                html: `
+                                    <div
+                                        style="
+                                            width:28px;
+                                            height:28px;
+                                            border-radius:50%;
+                                            background:#2563eb;
+                                            color:white;
+                                            border:3px solid white;
+                                            box-shadow:0 2px 7px rgba(0,0,0,.35);
+                                            display:flex;
+                                            align-items:center;
+                                            justify-content:center;
+                                            font-weight:bold;
+                                            font-size:11px;
+                                        "
+                                    >
+                                        ${selectedIndex + 1}
+                                    </div>
+                                `,
+
+                                iconSize:
+                                    [
+                                        28,
+                                        28
+                                    ],
+
+                                iconAnchor:
+                                    [
+                                        14,
+                                        14
+                                    ]
+
+                            });
+
+                    } else {
+
+                        icon =
+                            L.divIcon({
+
+                                className:
+                                    "",
+
+                                html: `
+                                    <div
+                                        style="
+                                            width:25px;
+                                            height:25px;
+                                            border-radius:50%;
+                                            background:white;
+                                            border:3px solid #2563eb;
+                                            box-shadow:0 2px 6px rgba(0,0,0,.3);
+                                        "
+                                    ></div>
+                                `,
+
+                                iconSize:
+                                    [
+                                        25,
+                                        25
+                                    ],
+
+                                iconAnchor:
+                                    [
+                                        12,
+                                        12
+                                    ]
+
+                            });
+
+                    }
+
+
+                    const marker =
+                        L.marker(
+                            [
+                                stop.latitude,
+                                stop.longitude
+                            ],
+                            {
+                                icon
+                            }
+                        )
+                        .addTo(
+                            map
+                        );
+
+
+                    marker.bindTooltip(
+                        escapeHTML(
+                            stop.stop_name
+                        )
+                    );
+
+
+                    marker.on(
+                        "click",
+                        () => {
+
+                            if (
+                                routeMode
+                            ) {
+
+                                selectRouteStop(
+                                    stop
+                                );
+
+                            } else {
+
+                                marker.openPopup();
+
+                            }
+
+                        }
+                    );
+
+
+                    marker.bindPopup(`
+
+                        <strong>
+                            ${escapeHTML(
+                                stop.stop_name
+                            )}
+                        </strong>
+
+                        <br>
+
+                        ${Number(
+                            stop.latitude
+                        ).toFixed(6)}
+
+                        ,
+
+                        ${Number(
+                            stop.longitude
+                        ).toFixed(6)}
+
+                    `);
+
+
+                    stopMarkers.push(
+                        marker
+                    );
+
+                }
+            );
+
+        }
+
+
+        function clearMapSelection() {
+
+            selectedLat = null;
+
+            selectedLng = null;
+
+
+            document.getElementById(
+                "coordinates"
+            ).value = "";
+
+
+            if (
+                temporaryMarker
+            ) {
+
+                map.removeLayer(
+                    temporaryMarker
+                );
+
+                temporaryMarker =
+                    null;
+
+            }
+
+        }
+
+
+        function focusStop(
+            id
+        ) {
+
+            const stop =
+                stops.find(
+                    item =>
+                        item.id === id
+                );
+
+
+            if (!stop) {
+                return;
+            }
+
+
+            map.setView(
+                [
+                    stop.latitude,
+                    stop.longitude
+                ],
+                17
+            );
+
+        }
+
+
+        function showAllStops() {
+
+            if (!stops.length) {
+
+                toast(
+                    "No stops available.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            const bounds =
+                L.latLngBounds(
+                    stops.map(
+                        stop => [
+                            stop.latitude,
+                            stop.longitude
+                        ]
+                    )
+                );
+
+
+            map.fitBounds(
+                bounds,
+                {
+                    padding:
+                        [
+                            30,
+                            30
+                        ]
+                }
+            );
+
+        }
+
+
+        async function toggleStop(
+            id,
+            status
+        ) {
+
+            const {
+                error
+            } =
+                await supabaseClient
+                    .from("stops")
+                    .update({
+                        is_active:
+                            !status
+                    })
+                    .eq(
+                        "id",
+                        id
+                    );
+
+
+            if (error) {
+
+                toast(
+                    error.message,
+                    "error"
+                );
+
+                return;
+            }
+
+
+            await loadStops();
+
+            toast(
+                "Stop status updated."
+            );
+
+        }
+
+
+        async function deleteStop(
+            id
+        ) {
+
+            if (
+                !confirm(
+                    "Delete this stop? It may also be removed from routes."
+                )
+            ) {
+                return;
+            }
+
+
+            const {
+                error
+            } =
+                await supabaseClient
+                    .from("stops")
+                    .delete()
+                    .eq(
+                        "id",
+                        id
+                    );
+
+
+            if (error) {
+
+                toast(
+                    error.message,
+                    "error"
+                );
+
+                return;
+            }
+
+
+            await loadStops();
+
+            toast(
+                "Stop deleted."
+            );
+
+        }
+
+
+        /* =====================================================
+           ROUTE MODE
+        ===================================================== */
+
+        function startRouteMode() {
+
+            if (
+                stops.length < 2
+            ) {
+
+                toast(
+                    "You need at least 2 stops first.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            routeMode =
+                !routeMode;
+
+
+            if (
+                routeMode
+            ) {
+
+                selectedRouteStops =
+                    [];
+
+                routeGeometry =
+                    null;
+
+
+                if (
+                    routeLayer
+                ) {
+
+                    map.removeLayer(
+                        routeLayer
+                    );
+
+                    routeLayer =
+                        null;
+
+                }
+
+
+                document.getElementById(
+                    "routeModeButton"
+                ).textContent =
+                    "✕ Stop Selection Mode";
+
+
+                document.getElementById(
+                    "routeModeButton"
+                ).className =
+                    "btn danger";
+
+
+                toast(
+                    "Route mode active. Click stops in order."
+                );
+
+            } else {
+
+                document.getElementById(
+                    "routeModeButton"
+                ).textContent =
+                    "📍 Select Stops";
+
+
+                document.getElementById(
+                    "routeModeButton"
+                ).className =
+                    "btn primary";
+
+            }
+
+
+            updateRouteUI();
+
+            renderStopMarkers();
+
+        }
+
+
+        function selectRouteStop(
+            stop
+        ) {
+
+            if (!routeMode) {
+                return;
+            }
+
+
+            const exists =
+                selectedRouteStops.some(
+                    item =>
+                        item.id ===
+                        stop.id
+                );
+
+
+            if (exists) {
+
+                toast(
+                    "This stop is already selected.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            selectedRouteStops.push(
+                stop
+            );
+
+
+            routeGeometry =
+                null;
+
+
+            document.getElementById(
+                "distance"
+            ).textContent =
+                "—";
+
+
+            document.getElementById(
+                "duration"
+            ).textContent =
+                "—";
+
+
+            updateRouteUI();
+
+            renderStopMarkers();
+
+        }
+
+
+        function removeRouteStop(
+            index
+        ) {
+
+            selectedRouteStops.splice(
+                index,
+                1
+            );
+
+
+            routeGeometry =
+                null;
+
+
+            if (
+                routeLayer
+            ) {
+
+                map.removeLayer(
+                    routeLayer
+                );
+
+                routeLayer =
+                    null;
+
+            }
+
+
+            updateRouteUI();
+
+            renderStopMarkers();
+
+        }
+
+
+        function clearRouteBuilder() {
+
+            routeMode =
+                false;
+
+            selectedRouteStops =
+                [];
+
+            routeGeometry =
+                null;
+
+
+            if (
+                routeLayer
+            ) {
+
+                map.removeLayer(
+                    routeLayer
+                );
+
+                routeLayer =
+                    null;
+
+            }
+
+
+            document.getElementById(
+                "routeName"
+            ).value = "";
+
+
+            document.getElementById(
+                "routeDescription"
+            ).value = "";
+
+
+            document.getElementById(
+                "distance"
+            ).textContent =
+                "—";
+
+
+            document.getElementById(
+                "duration"
+            ).textContent =
+                "—";
+
+
+            document.getElementById(
+                "routeModeButton"
+            ).textContent =
+                "📍 Select Stops";
+
+
+            document.getElementById(
+                "routeModeButton"
+            ).className =
+                "btn primary";
+
+
+            updateRouteUI();
+
+            renderStopMarkers();
+
+        }
+
+
+        function updateRouteUI() {
+
+            document.getElementById(
+                "selectedCount"
+            ).textContent =
+                selectedRouteStops.length;
+
+
+            const list =
+                document.getElementById(
+                    "selectedStops"
+                );
+
+
+            if (
+                !selectedRouteStops.length
+            ) {
+
+                list.innerHTML = `
+
+                    <li>
+
+                        <span
+                            style="
+                                color:#6b7280;
+                                font-size:11px;
+                            "
+                        >
+                            No stops selected.
+                        </span>
+
+                    </li>
+
+                `;
+
+                return;
+
+            }
+
+
+            list.innerHTML =
+                selectedRouteStops
+                    .map(
+                        (
+                            stop,
+                            index
+                        ) => `
+
+                        <li>
+
+                            <span class="number">
+                                ${index + 1}
+                            </span>
+
+                            <span class="selected-name">
+                                ${escapeHTML(
+                                    stop.stop_name
+                                )}
+                            </span>
+
+                            <button
+                                class="remove"
+                                onclick="removeRouteStop(
+                                    ${index}
+                                )"
+                            >
+                                ×
+                            </button>
+
+                        </li>
+
+                    `
+                    )
+                    .join("");
+
+        }
+
+
+        /* =====================================================
+           OSRM
+        ===================================================== */
+
+        async function generateRoute() {
+
+            if (
+                selectedRouteStops.length < 2
+            ) {
+
+                toast(
+                    "Select at least 2 stops.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            const coordinates =
+                selectedRouteStops
+                    .map(
+                        stop =>
+                            `${stop.longitude},${stop.latitude}`
+                    )
+                    .join(";");
+
+
+            const url =
+                `https://router.project-osrm.org/route/v1/driving/${coordinates}?overview=full&geometries=geojson`;
+
+
+            toast(
+                "Generating road route..."
+            );
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        url
+                    );
+
+
+                if (
+                    !response.ok
+                ) {
+
+                    throw new Error(
+                        "OSRM request failed."
+                    );
+
+                }
+
+
+                const data =
+                    await response.json();
+
+
+                if (
+                    data.code !== "Ok" ||
+                    !data.routes ||
+                    !data.routes.length
+                ) {
+
+                    throw new Error(
+                        "No route found."
+                    );
+
+                }
+
+
+                const route =
+                    data.routes[0];
+
+
+                routeGeometry = {
+
+                    geometry:
+                        route.geometry,
+
+                    distance:
+                        route.distance,
+
+                    duration:
+                        route.duration
+
+                };
+
+
+                if (
+                    routeLayer
+                ) {
+
+                    map.removeLayer(
+                        routeLayer
+                    );
+
+                }
+
+
+                routeLayer =
+                    L.geoJSON(
+                        route.geometry,
+                        {
+                            style: {
+                                weight: 5
+                            }
+                        }
+                    )
+                    .addTo(
+                        map
+                    );
+
+
+                map.fitBounds(
+                    routeLayer.getBounds(),
+                    {
+                        padding:
+                            [
+                                40,
+                                40
+                            ]
+                    }
+                );
+
+
+                document.getElementById(
+                    "distance"
+                ).textContent =
+                    formatDistance(
+                        route.distance
+                    );
+
+
+                document.getElementById(
+                    "duration"
+                ).textContent =
+                    formatDuration(
+                        route.duration
+                    );
+
+
+                toast(
+                    "Road route generated successfully."
+                );
+
+            } catch (
+                error
+            ) {
+
+                console.error(
+                    error
+                );
+
+                toast(
+                    "Could not generate the road route.",
+                    "error"
+                );
+
+            }
+
+        }
+
+
+        function formatDistance(
+            meters
+        ) {
+
+            if (
+                meters < 1000
+            ) {
+
+                return `${Math.round(
+                    meters
+                )} m`;
+
+            }
+
+
+            return `${(
+                meters / 1000
+            ).toFixed(2)} km`;
+
+        }
+
+
+        function formatDuration(
+            seconds
+        ) {
+
+            const minutes =
+                Math.round(
+                    seconds / 60
+                );
+
+
+            if (
+                minutes < 60
+            ) {
+
+                return `${minutes} min`;
+
+            }
+
+
+            const hours =
+                Math.floor(
+                    minutes / 60
+                );
+
+
+            const remaining =
+                minutes % 60;
+
+
+            return remaining
+                ? `${hours} hr ${remaining} min`
+                : `${hours} hr`;
+
+        }
+
+
+        /* =====================================================
+           SAVE ROUTE
+        ===================================================== */
+
+        async function saveRoute() {
+
+            const name =
+                document.getElementById(
+                    "routeName"
+                )
+                .value
+                .trim();
+
+
+            const description =
+                document.getElementById(
+                    "routeDescription"
+                )
+                .value
+                .trim();
+
+
+            if (!name) {
+
+                toast(
+                    "Enter a route name.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            if (
+                selectedRouteStops.length < 2
+            ) {
+
+                toast(
+                    "Select at least 2 stops.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            if (!routeGeometry) {
+
+                toast(
+                    "Generate the road route first.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            try {
+
+                /*
+                 * Create route
+                 */
+
+                const {
+                    data: route,
+                    error: routeError
+                } =
+                    await supabaseClient
+                        .from("routes")
+                        .insert({
+                            route_name:
+                                name,
+                            description:
+                                description ||
+                                null,
+                            route_geometry:
+                                routeGeometry.geometry
+                        })
+                        .select()
+                        .single();
+
+
+                if (
+                    routeError
+                ) {
+
+                    throw routeError;
+
+                }
+
+
+                /*
+                 * Create route-stop records
+                 */
+
+                const rows =
+                    selectedRouteStops
+                        .map(
+                            (
+                                stop,
+                                index
+                            ) => ({
+
+                                route_id:
+                                    route.id,
+
+                                stop_id:
+                                    stop.id,
+
+                                stop_order:
+                                    index + 1
+
+                            })
+                        );
+
+
+                const {
+                    error:
+                        stopError
+                } =
+                    await supabaseClient
+                        .from("route_stops")
+                        .insert(
+                            rows
+                        );
+
+
+                if (
+                    stopError
+                ) {
+
+                    /*
+                     * Roll back route
+                     * if route_stops fails.
+                     */
+
+                    await supabaseClient
+                        .from("routes")
+                        .delete()
+                        .eq(
+                            "id",
+                            route.id
+                        );
+
+
+                    throw stopError;
+
+                }
+
+
+                toast(
+                    "Route saved successfully."
+                );
+
+
+                clearRouteBuilder();
+
+                await loadRoutes();
+
+            } catch (
+                error
+            ) {
+
+                console.error(
+                    error
+                );
+
+                toast(
+                    error.message ||
+                    "Could not save route.",
+                    "error"
+                );
+
+            }
+
+        }
+
+
+        /* =====================================================
+           ROUTES
+        ===================================================== */
+
+        async function loadRoutes() {
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+                    .from("routes")
+                    .select("*")
+                    .order(
+                        "created_at",
+                        {
+                            ascending: false
+                        }
+                    );
+
+
+            if (error) {
+
+                console.error(
+                    error
+                );
+
+                toast(
+                    "Could not load routes.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            routes =
+                data || [];
+
+
+            /*
+             * Get stop count
+             */
+
+            for (
+                const route of routes
+            ) {
+
+                const {
+                    count
+                } =
+                    await supabaseClient
+                        .from("route_stops")
+                        .select(
+                            "*",
+                            {
+                                count:
+                                    "exact",
+                                head:
+                                    true
+                            }
+                        )
+                        .eq(
+                            "route_id",
+                            route.id
+                        );
+
+
+                route.stop_count =
+                    count || 0;
+
+            }
+
+
+            renderRoutes();
+
+            updateStats();
+
+        }
+
+
+        function renderRoutes() {
+
+            const search =
+                document.getElementById(
+                    "routeSearch"
+                )
+                .value
+                .trim()
+                .toLowerCase();
+
+
+            const filtered =
+                routes.filter(
+                    route =>
+
+                        (
+                            route.route_name ||
+                            ""
+                        )
+                        .toLowerCase()
+                        .includes(
+                            search
+                        )
+
+                        ||
+
+                        (
+                            route.description ||
+                            ""
+                        )
+                        .toLowerCase()
+                        .includes(
+                            search
+                        )
+                );
+
+
+            const table =
+                document.getElementById(
+                    "routeTable"
+                );
+
+
+            if (!filtered.length) {
+
+                table.innerHTML = `
+
+                    <tr>
+
+                        <td
+                            colspan="5"
+                            class="empty"
+                        >
+                            No routes found.
+                        </td>
+
+                    </tr>
+
+                `;
+
+                return;
+            }
+
+
+            table.innerHTML =
+                filtered
+                    .map(
+                        route => `
+
+                        <tr>
+
+                            <td>
+
+                                <strong>
+                                    ${escapeHTML(
+                                        route.route_name
+                                    )}
+                                </strong>
+
+                            </td>
+
+
+                            <td>
+
+                                ${escapeHTML(
+                                    route.description ||
+                                    "—"
+                                )}
+
+                            </td>
+
+
+                            <td>
+
+                                ${route.stop_count}
+
+                            </td>
+
+
+                            <td>
+
+                                <span
+                                    class="status ${
+                                        route.is_active
+                                            ? "active"
+                                            : "inactive"
+                                    }"
+                                >
+                                    ${
+                                        route.is_active
+                                            ? "Active"
+                                            : "Inactive"
+                                    }
+                                </span>
+
+                            </td>
+
+
+                            <td>
+
+                                <div class="actions">
+
+                                    <button
+                                        class="btn primary"
+                                        onclick="viewRoute(
+                                            '${route.id}'
+                                        )"
+                                    >
+                                        View
+                                    </button>
+
+
+                                    <button
+                                        class="btn warning"
+                                        onclick="toggleRoute(
+                                            '${route.id}',
+                                            ${route.is_active}
+                                        )"
+                                    >
+                                        ${
+                                            route.is_active
+                                                ? "Deactivate"
+                                                : "Activate"
+                                        }
+                                    </button>
+
+
+                                    <button
+                                        class="btn danger"
+                                        onclick="deleteRoute(
+                                            '${route.id}'
+                                        )"
+                                    >
+                                        Delete
+                                    </button>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                    `
+                    )
+                    .join("");
+
+        }
+
+
+        async function viewRoute(
+            id
+        ) {
+
+            const route =
+                routes.find(
+                    item =>
+                        item.id === id
+                );
+
+
+            if (
+                !route ||
+                !route.route_geometry
+            ) {
+
+                toast(
+                    "This route has no geometry.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            if (
+                routeLayer
+            ) {
+
+                map.removeLayer(
+                    routeLayer
+                );
+
+            }
+
+
+            routeLayer =
+                L.geoJSON(
+                    route.route_geometry,
+                    {
+                        style: {
+                            weight: 5
+                        }
+                    }
+                )
+                .addTo(
+                    map
+                );
+
+
+            map.fitBounds(
+                routeLayer.getBounds(),
+                {
+                    padding:
+                        [
+                            40,
+                            40
+                        ]
+                }
+            );
+
+
+            toast(
+                `Showing ${route.route_name}`
+            );
+
+        }
+
+
+        async function toggleRoute(
+            id,
+            status
+        ) {
+
+            const {
+                error
+            } =
+                await supabaseClient
+                    .from("routes")
+                    .update({
+                        is_active:
+                            !status
+                    })
+                    .eq(
+                        "id",
+                        id
+                    );
+
+
+            if (error) {
+
+                toast(
+                    error.message,
+                    "error"
+                );
+
+                return;
+            }
+
+
+            await loadRoutes();
+
+            toast(
+                "Route status updated."
+            );
+
+        }
+
+
+        async function deleteRoute(
+            id
+        ) {
+
+            if (
+                !confirm(
+                    "Delete this route?"
+                )
+            ) {
+                return;
+            }
+
+
+            const {
+                error
+            } =
+                await supabaseClient
+                    .from("routes")
+                    .delete()
+                    .eq(
+                        "id",
+                        id
+                    );
+
+
+            if (error) {
+
+                toast(
+                    error.message,
+                    "error"
+                );
+
+                return;
+            }
+
+
+            await loadRoutes();
+
+            toast(
+                "Route deleted."
+            );
+
+        }
+
+
+        /* =====================================================
+           STATS
+        ===================================================== */
+
+        function updateStats() {
+
+            document.getElementById(
+                "totalBuses"
+            ).textContent =
+                buses.length;
+
+
+            document.getElementById(
+                "activeBuses"
+            ).textContent =
+                buses.filter(
+                    bus =>
+                        bus.is_active
+                ).length;
+
+
+            document.getElementById(
+                "totalStops"
+            ).textContent =
+                stops.length;
+
+
+            document.getElementById(
+                "totalRoutes"
+            ).textContent =
+                routes.length;
+
+        }
+
+
+        /* =====================================================
+           START
+        ===================================================== */
+
+        async function startApp() {
+
+            initializeMap();
+
+            await loadData();
+
+            renderStopMarkers();
+
+        }
+
+
+        startApp();
+
+    </script>
+
+</body>
+
+</html>
