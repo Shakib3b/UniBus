@@ -19,7 +19,7 @@ exports.handler = async (event) => {
         // 1. Check environment variables
         // -----------------------------------------
 
-        const supabaseUrl = process.env.SUPABASE_PROJECT_URL;
+        const supabaseUrl = "https://hkgokigrymuslbbtwfpb.supabase.co";
         const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
         if (!supabaseUrl || !serviceRoleKey) {
