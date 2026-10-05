@@ -18,7 +18,6 @@ exports.handler = async (event) => {
         };
     }
 
-
     try {
 
         // ==========================================
@@ -30,7 +29,6 @@ exports.handler = async (event) => {
 
         const serviceRoleKey =
             process.env.SUPABASE_SERVICE_ROLE_KEY;
-
 
         if (!serviceRoleKey) {
             return {
@@ -54,7 +52,6 @@ exports.handler = async (event) => {
             event.headers?.authorization ||
             event.headers?.Authorization;
 
-
         if (
             !authHeader ||
             !authHeader.startsWith("Bearer ")
@@ -71,15 +68,14 @@ exports.handler = async (event) => {
             };
         }
 
-
         const accessToken =
             authHeader
-                .substring(7)
+                .substring("Bearer ".length)
                 .trim();
 
 
         // ==========================================
-        // 4. Admin Supabase client
+        // 4. Supabase admin client
         // ==========================================
 
         const supabaseAdmin =
@@ -96,7 +92,7 @@ exports.handler = async (event) => {
 
 
         // ==========================================
-        // 5. Verify current user
+        // 5. Verify logged-in user
         // ==========================================
 
         const {
@@ -106,7 +102,6 @@ exports.handler = async (event) => {
             await supabaseAdmin.auth.getUser(
                 accessToken
             );
-
 
         if (
             userError ||
@@ -125,13 +120,12 @@ exports.handler = async (event) => {
             };
         }
 
-
         const adminUser =
             userData.user;
 
 
         // ==========================================
-        // 6. Check admin role
+        // 6. Verify admin role
         // ==========================================
 
         const {
@@ -143,7 +137,6 @@ exports.handler = async (event) => {
                 .select("id, role")
                 .eq("id", adminUser.id)
                 .single();
-
 
         if (
             adminProfileError ||
@@ -165,20 +158,17 @@ exports.handler = async (event) => {
 
 
         // ==========================================
-        // 7. Parse body
+        // 7. Parse request body
         // ==========================================
 
-        let body = {};
+        let body;
 
         try {
-
             body =
                 JSON.parse(
                     event.body || "{}"
                 );
-
-        } catch (error) {
-
+        } catch {
             return {
                 statusCode: 400,
                 headers: {
@@ -229,7 +219,7 @@ exports.handler = async (event) => {
 
 
         // ==========================================
-        // 9. Validate
+        // 9. Validate fields
         // ==========================================
 
         if (
@@ -250,7 +240,6 @@ exports.handler = async (event) => {
             };
         }
 
-
         if (password.length < 6) {
             return {
                 statusCode: 400,
@@ -266,9 +255,12 @@ exports.handler = async (event) => {
         }
 
 
+        // ==========================================
+        // 10. Validate email
+        // ==========================================
+
         const emailRegex =
             /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
 
         if (!emailRegex.test(email)) {
             return {
@@ -286,14 +278,21 @@ exports.handler = async (event) => {
 
 
         // ==========================================
-        // 10. Generate UniBus login ID
+        // 11. Generate login ID
         // ==========================================
+
+        /*
+            Example:
+
+            driver01@busportal.app
+                    ↓
+            login_id = driver01
+        */
 
         const login_id =
             email
                 .split("@")[0]
                 .trim();
-
 
         if (!login_id) {
             return {
@@ -304,54 +303,7 @@ exports.handler = async (event) => {
                 },
                 body: JSON.stringify({
                     error:
-                        "Invalid login ID"
-                })
-            };
-        }
-
-
-        // ==========================================
-        // 11. Check duplicate email
-        // ==========================================
-
-        const {
-            data: existingDriver,
-            error: existingDriverError
-        } =
-            await supabaseAdmin
-                .from("drivers")
-                .select("id")
-                .eq("email", email)
-                .maybeSingle();
-
-
-        if (existingDriverError) {
-            return {
-                statusCode: 500,
-                headers: {
-                    "Content-Type":
-                        "application/json"
-                },
-                body: JSON.stringify({
-                    error:
-                        "Could not check existing driver",
-                    details:
-                        existingDriverError.message
-                })
-            };
-        }
-
-
-        if (existingDriver) {
-            return {
-                statusCode: 409,
-                headers: {
-                    "Content-Type":
-                        "application/json"
-                },
-                body: JSON.stringify({
-                    error:
-                        "A driver with this email already exists"
+                        "Could not determine login ID"
                 })
             };
         }
@@ -368,9 +320,11 @@ exports.handler = async (event) => {
             await supabaseAdmin
                 .from("profiles")
                 .select("id")
-                .eq("login_id", login_id)
+                .eq(
+                    "login_id",
+                    login_id
+                )
                 .maybeSingle();
-
 
         if (existingLoginError) {
             return {
@@ -388,7 +342,6 @@ exports.handler = async (event) => {
             };
         }
 
-
         if (existingLogin) {
             return {
                 statusCode: 409,
@@ -405,7 +358,7 @@ exports.handler = async (event) => {
 
 
         // ==========================================
-        // 13. Check bus
+        // 13. Validate selected bus
         // ==========================================
 
         if (bus_id) {
@@ -419,9 +372,11 @@ exports.handler = async (event) => {
                     .select(
                         "id, bus_number, is_active"
                     )
-                    .eq("id", bus_id)
+                    .eq(
+                        "id",
+                        bus_id
+                    )
                     .single();
-
 
             if (
                 busError ||
@@ -440,7 +395,6 @@ exports.handler = async (event) => {
                 };
             }
 
-
             if (!bus.is_active) {
                 return {
                     statusCode: 400,
@@ -458,49 +412,26 @@ exports.handler = async (event) => {
 
 
         // ==========================================
-        // 14. CREATE AUTH USER
-        //
-        // IMPORTANT:
-        // We pass login_id through user_metadata.
-        //
-        // This is important because your Supabase
-        // database appears to have a trigger that
-        // automatically creates a profiles row.
+        // 14. Create Supabase Auth user
         // ==========================================
 
         const {
             data: authData,
             error: authError
         } =
-            await supabaseAdmin.auth.admin.createUser({
-
-                email: email,
-
-                password: password,
-
-                email_confirm: true,
-
-                user_metadata: {
-
-                    login_id:
-                        login_id,
-
-                    full_name:
-                        full_name,
-
-                    role:
-                        "driver"
-
-                }
-
-            });
-
+            await supabaseAdmin
+                .auth
+                .admin
+                .createUser({
+                    email: email,
+                    password: password,
+                    email_confirm: true
+                });
 
         if (
             authError ||
             !authData?.user
         ) {
-
             return {
                 statusCode: 400,
                 headers: {
@@ -515,21 +446,12 @@ exports.handler = async (event) => {
             };
         }
 
-
         const driverId =
             authData.user.id;
 
 
         // ==========================================
-        // 15. Make sure profile exists
-        //
-        // UPSERT instead of INSERT.
-        //
-        // This handles both situations:
-        //
-        // A) trigger already created profile
-        //
-        // B) trigger did not create profile
+        // 15. Create profile
         // ==========================================
 
         const {
@@ -537,37 +459,22 @@ exports.handler = async (event) => {
         } =
             await supabaseAdmin
                 .from("profiles")
-                .upsert(
-                    {
-                        id:
-                            driverId,
-
-                        login_id:
-                            login_id,
-
-                        full_name:
-                            full_name,
-
-                        role:
-                            "driver"
-                    },
-                    {
-                        onConflict:
-                            "id"
-                    }
-                );
-
+                .insert({
+                    id: driverId,
+                    login_id: login_id,
+                    full_name: full_name,
+                    role: "driver"
+                });
 
         if (profileError) {
 
-            // Rollback Auth user
+            // Remove Auth user if profile fails
             await supabaseAdmin
                 .auth
                 .admin
                 .deleteUser(
                     driverId
                 );
-
 
             return {
                 statusCode: 500,
@@ -576,13 +483,10 @@ exports.handler = async (event) => {
                         "application/json"
                 },
                 body: JSON.stringify({
-
                     error:
                         "Failed to create driver profile",
-
                     details:
                         profileError.message
-
                 })
             };
         }
@@ -592,6 +496,14 @@ exports.handler = async (event) => {
         // 16. Create drivers record
         // ==========================================
 
+        /*
+            IMPORTANT:
+
+            The drivers table DOES NOT have email.
+
+            Email is stored in Supabase Auth.
+        */
+
         const {
             data: driver,
             error: driverError
@@ -599,36 +511,22 @@ exports.handler = async (event) => {
             await supabaseAdmin
                 .from("drivers")
                 .insert({
-
-                    id:
-                        driverId,
-
-                    full_name:
-                        full_name,
-
-                    email:
-                        email,
-
+                    id: driverId,
+                    full_name: full_name,
                     phone:
                         phone || null,
-
                     license_number:
                         license_number || null,
-
                     bus_id:
                         bus_id || null,
-
-                    is_active:
-                        true
-
+                    is_active: true
                 })
                 .select()
                 .single();
 
-
         if (driverError) {
 
-            // Delete profile
+            // Rollback profile
             await supabaseAdmin
                 .from("profiles")
                 .delete()
@@ -637,15 +535,13 @@ exports.handler = async (event) => {
                     driverId
                 );
 
-
-            // Delete Auth account
+            // Rollback Auth user
             await supabaseAdmin
                 .auth
                 .admin
                 .deleteUser(
                     driverId
                 );
-
 
             return {
                 statusCode: 500,
@@ -654,40 +550,33 @@ exports.handler = async (event) => {
                         "application/json"
                 },
                 body: JSON.stringify({
-
                     error:
                         "Failed to create driver record",
-
                     details:
                         driverError.message
-
                 })
             };
         }
 
 
         // ==========================================
-        // 17. SUCCESS
+        // 17. Success
         // ==========================================
 
         return {
             statusCode: 201,
-
             headers: {
                 "Content-Type":
                     "application/json"
             },
-
             body: JSON.stringify({
 
-                success:
-                    true,
+                success: true,
 
                 message:
                     "Driver created successfully",
 
                 driver: {
-
                     id:
                         driver.id,
 
@@ -698,7 +587,7 @@ exports.handler = async (event) => {
                         driver.full_name,
 
                     email:
-                        driver.email,
+                        email,
 
                     phone:
                         driver.phone,
@@ -711,9 +600,7 @@ exports.handler = async (event) => {
 
                     is_active:
                         driver.is_active
-
                 }
-
             })
         };
 
@@ -725,23 +612,17 @@ exports.handler = async (event) => {
             error
         );
 
-
         return {
             statusCode: 500,
-
             headers: {
                 "Content-Type":
                     "application/json"
             },
-
             body: JSON.stringify({
-
                 error:
                     "Internal server error",
-
                 details:
                     error.message
-
             })
         };
     }
