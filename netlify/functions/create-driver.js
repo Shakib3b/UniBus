@@ -267,14 +267,16 @@ exports.handler = async (event) => {
         // 11. Create driver profile
         // -----------------------------------------
 
-        const {
-            error: profileInsertError
-        } = await supabaseAdmin
-            .from("profiles")
-            .insert({
-                id: driverId,
-                role: "driver"
-            });
+        const loginId = email.split("@")[0];
+
+        const { error: profileInsertError } = await supabaseAdmin
+        .from("profiles")
+        .insert({
+        id: userId,
+        login_id: loginId,
+        full_name: full_name,
+        role: "driver"
+    });
 
         if (profileInsertError) {
             await supabaseAdmin.auth.admin.deleteUser(driverId);
