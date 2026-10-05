@@ -1,7 +1,11 @@
 const { createClient } = require("@supabase/supabase-js");
 
 exports.handler = async (event) => {
-    // Only allow POST requests
+
+    // ==========================================
+    // 1. Only allow POST requests
+    // ==========================================
+
     if (event.httpMethod !== "POST") {
         return {
             statusCode: 405,
@@ -15,34 +19,48 @@ exports.handler = async (event) => {
     }
 
     try {
-        // -----------------------------------------
-        // 1. Check environment variables
-        // -----------------------------------------
 
-        const supabaseUrl = "https://hkgokigrymuslbbtwfpb.supabase.co";
-        const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+        // ==========================================
+        // 2. Supabase configuration
+        // ==========================================
 
-        if (!supabaseUrl || !serviceRoleKey) {
+        // The project URL is public configuration.
+        // The service-role key MUST stay in Netlify
+        // environment variables.
+        const supabaseUrl =
+            "https://hkgokigrymuslbbtwfpb.supabase.co";
+
+        const serviceRoleKey =
+            process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+
+        if (!serviceRoleKey) {
             return {
                 statusCode: 500,
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    error: "Supabase environment variables are missing"
+                    error:
+                        "SUPABASE_SERVICE_ROLE_KEY is missing in Netlify environment variables"
                 })
             };
         }
 
-        // -----------------------------------------
-        // 2. Get admin access token
-        // -----------------------------------------
+
+        // ==========================================
+        // 3. Get admin access token
+        // ==========================================
 
         const authHeader =
-            event.headers.authorization ||
-            event.headers.Authorization;
+            event.headers?.authorization ||
+            event.headers?.Authorization;
 
-        if (!authHeader || !authHeader.startsWith("Bearer ")) {
+
+        if (
+            !authHeader ||
+            !authHeader.startsWith("Bearer ")
+        ) {
             return {
                 statusCode: 401,
                 headers: {
@@ -54,11 +72,16 @@ exports.handler = async (event) => {
             };
         }
 
-        const accessToken = authHeader.replace("Bearer ", "");
 
-        // -----------------------------------------
-        // 3. Create Supabase admin client
-        // -----------------------------------------
+        const accessToken =
+            authHeader
+                .substring("Bearer ".length)
+                .trim();
+
+
+        // ==========================================
+        // 4. Create Supabase admin client
+        // ==========================================
 
         const supabaseAdmin = createClient(
             supabaseUrl,
@@ -71,14 +94,19 @@ exports.handler = async (event) => {
             }
         );
 
-        // -----------------------------------------
-        // 4. Verify logged-in user
-        // -----------------------------------------
+
+        // ==========================================
+        // 5. Verify logged-in user
+        // ==========================================
 
         const {
             data: { user },
             error: userError
-        } = await supabaseAdmin.auth.getUser(accessToken);
+        } =
+            await supabaseAdmin.auth.getUser(
+                accessToken
+            );
+
 
         if (userError || !user) {
             return {
@@ -87,26 +115,30 @@ exports.handler = async (event) => {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    error: "Invalid authentication token"
+                    error:
+                        "Invalid authentication token"
                 })
             };
         }
 
-        // -----------------------------------------
-        // 5. Check that caller is an admin
-        // -----------------------------------------
+
+        // ==========================================
+        // 6. Check admin role
+        // ==========================================
 
         const {
             data: adminProfile,
-            error: profileError
-        } = await supabaseAdmin
-            .from("profiles")
-            .select("id, role")
-            .eq("id", user.id)
-            .single();
+            error: adminProfileError
+        } =
+            await supabaseAdmin
+                .from("profiles")
+                .select("id, role")
+                .eq("id", user.id)
+                .single();
+
 
         if (
-            profileError ||
+            adminProfileError ||
             !adminProfile ||
             adminProfile.role !== "admin"
         ) {
@@ -116,20 +148,27 @@ exports.handler = async (event) => {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    error: "Only admins can create drivers"
+                    error:
+                        "Only admins can create drivers"
                 })
             };
         }
 
-        // -----------------------------------------
-        // 6. Read request body
-        // -----------------------------------------
+
+        // ==========================================
+        // 7. Read request body
+        // ==========================================
 
         let body;
 
         try {
-            body = JSON.parse(event.body || "{}");
+
+            body = JSON.parse(
+                event.body || "{}"
+            );
+
         } catch (error) {
+
             return {
                 statusCode: 400,
                 headers: {
@@ -141,30 +180,59 @@ exports.handler = async (event) => {
             };
         }
 
-        const {
-            full_name,
-            email,
-            password,
-            phone,
-            license_number,
-            bus_id
-        } = body;
 
-        // -----------------------------------------
-        // 7. Validate required fields
-        // -----------------------------------------
+        // ==========================================
+        // 8. Get driver information
+        // ==========================================
 
-        if (!full_name || !email || !password) {
+        const full_name =
+            String(body.full_name || "").trim();
+
+        const email =
+            String(body.email || "")
+                .trim()
+                .toLowerCase();
+
+        const password =
+            String(body.password || "");
+
+        const phone =
+            String(body.phone || "").trim();
+
+        const license_number =
+            String(
+                body.license_number || ""
+            ).trim();
+
+        const bus_id =
+            body.bus_id || null;
+
+
+        // ==========================================
+        // 9. Validate required fields
+        // ==========================================
+
+        if (
+            !full_name ||
+            !email ||
+            !password
+        ) {
             return {
                 statusCode: 400,
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    error: "Full name, email and password are required"
+                    error:
+                        "Full name, email and password are required"
                 })
             };
         }
+
+
+        // ==========================================
+        // 10. Validate password
+        // ==========================================
 
         if (password.length < 6) {
             return {
@@ -173,17 +241,20 @@ exports.handler = async (event) => {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    error: "Password must be at least 6 characters"
+                    error:
+                        "Password must be at least 6 characters"
                 })
             };
         }
 
-        // -----------------------------------------
-        // 8. Validate email
-        // -----------------------------------------
+
+        // ==========================================
+        // 11. Validate email
+        // ==========================================
 
         const emailRegex =
             /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 
         if (!emailRegex.test(email)) {
             return {
@@ -192,179 +263,442 @@ exports.handler = async (event) => {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    error: "Invalid email address"
+                    error:
+                        "Invalid email address"
                 })
             };
         }
 
-        // -----------------------------------------
-        // 9. Validate selected bus
-        // -----------------------------------------
 
-        if (bus_id) {
-            const {
-                data: bus,
-                error: busError
-            } = await supabaseAdmin
-                .from("buses")
-                .select("id, bus_number, is_active")
-                .eq("id", bus_id)
-                .single();
+        // ==========================================
+        // 12. Generate UniBus login ID
+        // ==========================================
 
-            if (busError || !bus) {
-                return {
-                    statusCode: 400,
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        error: "Selected bus does not exist"
-                    })
-                };
-            }
+        /*
+            Example:
 
-            if (!bus.is_active) {
-                return {
-                    statusCode: 400,
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        error: "Selected bus is inactive"
-                    })
-                };
-            }
-        }
+            testdriver@busportal.app
+                       ↓
+            testdriver
+        */
 
-        // -----------------------------------------
-        // 10. Create Supabase Auth user
-        // -----------------------------------------
+        const login_id =
+            email
+                .split("@")[0]
+                .trim();
 
-        const {
-            data: authData,
-            error: authError
-        } = await supabaseAdmin.auth.admin.createUser({
-            email: email,
-            password: password,
-            email_confirm: true
-        });
 
-        if (authError) {
+        if (!login_id) {
             return {
                 statusCode: 400,
                 headers: {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    error: authError.message
+                    error:
+                        "Could not determine driver login ID from email"
                 })
             };
         }
 
-        const driverId = authData.user.id;
 
-        // -----------------------------------------
-        // 11. Create driver profile
-        // -----------------------------------------
+        // ==========================================
+        // 13. Validate selected bus
+        // ==========================================
 
-        const loginId = email.split("@")[0];
+        if (bus_id) {
 
-        const { error: profileInsertError } = await supabaseAdmin
-        .from("profiles")
-        .insert({
-        id: userId,
-        login_id: loginId,
-        full_name: full_name,
-        role: "driver"
-    });
+            const {
+                data: bus,
+                error: busError
+            } =
+                await supabaseAdmin
+                    .from("buses")
+                    .select(
+                        "id, bus_number, is_active"
+                    )
+                    .eq("id", bus_id)
+                    .single();
+
+
+            if (busError || !bus) {
+                return {
+                    statusCode: 400,
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+                    body: JSON.stringify({
+                        error:
+                            "Selected bus does not exist"
+                    })
+                };
+            }
+
+
+            if (!bus.is_active) {
+                return {
+                    statusCode: 400,
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+                    body: JSON.stringify({
+                        error:
+                            "Selected bus is inactive"
+                    })
+                };
+            }
+        }
+
+
+        // ==========================================
+        // 14. Check duplicate driver email
+        // ==========================================
+
+        const {
+            data: existingDriver,
+            error: existingDriverError
+        } =
+            await supabaseAdmin
+                .from("drivers")
+                .select("id")
+                .eq("email", email)
+                .maybeSingle();
+
+
+        if (existingDriverError) {
+            return {
+                statusCode: 500,
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+                body: JSON.stringify({
+                    error:
+                        "Could not check existing driver",
+                    details:
+                        existingDriverError.message
+                })
+            };
+        }
+
+
+        if (existingDriver) {
+            return {
+                statusCode: 409,
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+                body: JSON.stringify({
+                    error:
+                        "A driver with this email already exists"
+                })
+            };
+        }
+
+
+        // ==========================================
+        // 15. Check duplicate login ID
+        // ==========================================
+
+        const {
+            data: existingLogin,
+            error: existingLoginError
+        } =
+            await supabaseAdmin
+                .from("profiles")
+                .select("id")
+                .eq("login_id", login_id)
+                .maybeSingle();
+
+
+        if (existingLoginError) {
+            return {
+                statusCode: 500,
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+                body: JSON.stringify({
+                    error:
+                        "Could not check existing login ID",
+                    details:
+                        existingLoginError.message
+                })
+            };
+        }
+
+
+        if (existingLogin) {
+            return {
+                statusCode: 409,
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+                body: JSON.stringify({
+                    error:
+                        `Login ID "${login_id}" is already in use`
+                })
+            };
+        }
+
+
+        // ==========================================
+        // 16. Create Supabase Auth user
+        // ==========================================
+
+        const {
+            data: authData,
+            error: authError
+        } =
+            await supabaseAdmin.auth.admin.createUser({
+
+                email: email,
+
+                password: password,
+
+                email_confirm: true
+
+            });
+
+
+        if (
+            authError ||
+            !authData?.user
+        ) {
+
+            return {
+                statusCode: 400,
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+                body: JSON.stringify({
+                    error:
+                        authError?.message ||
+                        "Failed to create authentication user"
+                })
+            };
+        }
+
+
+        // Auth user's UUID
+        const driverId =
+            authData.user.id;
+
+
+        // ==========================================
+        // 17. Create driver profile
+        // ==========================================
+
+        /*
+            IMPORTANT:
+
+            profiles.login_id is NOT NULL.
+
+            This was the reason the previous
+            version failed.
+        */
+
+        const {
+            error: profileInsertError
+        } =
+            await supabaseAdmin
+                .from("profiles")
+                .insert({
+
+                    id: driverId,
+
+                    login_id: login_id,
+
+                    full_name: full_name,
+
+                    role: "driver"
+
+                });
+
+
+        // ==========================================
+        // 18. Rollback if profile creation fails
+        // ==========================================
 
         if (profileInsertError) {
-            await supabaseAdmin.auth.admin.deleteUser(driverId);
+
+            await supabaseAdmin
+                .auth
+                .admin
+                .deleteUser(driverId);
+
 
             return {
                 statusCode: 500,
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type":
+                        "application/json"
                 },
                 body: JSON.stringify({
-                    error: "Failed to create driver profile",
-                    details: profileInsertError.message
+
+                    error:
+                        "Failed to create driver profile",
+
+                    details:
+                        profileInsertError.message
+
                 })
             };
         }
 
-        // -----------------------------------------
-        // 12. Create driver record
-        // -----------------------------------------
+
+        // ==========================================
+        // 19. Create driver record
+        // ==========================================
 
         const {
             data: driver,
             error: driverError
-        } = await supabaseAdmin
-            .from("drivers")
-            .insert({
-                id: driverId,
-                full_name: full_name,
-                email: email,
-                phone: phone || null,
-                license_number: license_number || null,
-                bus_id: bus_id || null,
-                is_active: true
-            })
-            .select()
-            .single();
+        } =
+            await supabaseAdmin
+                .from("drivers")
+                .insert({
 
-        // -----------------------------------------
-        // 13. Rollback if driver creation fails
-        // -----------------------------------------
+                    id: driverId,
+
+                    full_name: full_name,
+
+                    email: email,
+
+                    phone:
+                        phone || null,
+
+                    license_number:
+                        license_number || null,
+
+                    bus_id:
+                        bus_id || null,
+
+                    is_active: true
+
+                })
+                .select()
+                .single();
+
+
+        // ==========================================
+        // 20. Rollback if driver creation fails
+        // ==========================================
 
         if (driverError) {
+
             await supabaseAdmin
                 .from("profiles")
                 .delete()
                 .eq("id", driverId);
 
-            await supabaseAdmin.auth.admin.deleteUser(driverId);
+
+            await supabaseAdmin
+                .auth
+                .admin
+                .deleteUser(driverId);
+
 
             return {
                 statusCode: 500,
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type":
+                        "application/json"
                 },
                 body: JSON.stringify({
-                    error: "Failed to create driver record",
-                    details: driverError.message
+
+                    error:
+                        "Failed to create driver record",
+
+                    details:
+                        driverError.message
+
                 })
             };
         }
 
-        // -----------------------------------------
-        // 14. Success
-        // -----------------------------------------
+
+        // ==========================================
+        // 21. SUCCESS
+        // ==========================================
 
         return {
             statusCode: 201,
+
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type":
+                    "application/json"
             },
+
             body: JSON.stringify({
+
                 success: true,
-                message: "Driver created successfully",
-                driver: driver
+
+                message:
+                    "Driver created successfully",
+
+                driver: {
+
+                    id:
+                        driver.id,
+
+                    full_name:
+                        driver.full_name,
+
+                    email:
+                        driver.email,
+
+                    phone:
+                        driver.phone,
+
+                    license_number:
+                        driver.license_number,
+
+                    bus_id:
+                        driver.bus_id,
+
+                    is_active:
+                        driver.is_active
+
+                }
+
             })
         };
 
+
     } catch (error) {
-        console.error("Create driver error:", error);
+
+        // ==========================================
+        // 22. Unexpected error
+        // ==========================================
+
+        console.error(
+            "Create driver error:",
+            error
+        );
+
 
         return {
             statusCode: 500,
+
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type":
+                    "application/json"
             },
+
             body: JSON.stringify({
-                error: "Internal server error",
-                details: error.message
+
+                error:
+                    "Internal server error",
+
+                details:
+                    error.message
+
             })
         };
     }
