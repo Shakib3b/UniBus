@@ -2,45 +2,217 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-    <title>UniBus Driver</title>
+    <title>UniBus Driver Dashboard</title>
 
     <link rel="stylesheet" href="../style.css">
+
+    <!-- Leaflet -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+
 </head>
+
 
 <body>
 
-    <main class="login-container">
+<main class="login-container">
 
-        <div class="login-card">
+    <div class="login-card">
 
-            <h1>🚌 UniBus Driver</h1>
+        <h1>🚌 UniBus Driver</h1>
 
-            <p class="subtitle">
-                Welcome to the Driver Dashboard
+        <p class="subtitle">
+            Driver Dashboard
+        </p>
+
+
+        <!-- Driver -->
+        <section>
+
+            <h2>
+                Welcome,
+                <span id="driverName">Loading...</span>
+            </h2>
+
+        </section>
+
+
+        <!-- Dashboard message -->
+        <p id="dashboardMessage"></p>
+
+
+        <!-- Bus -->
+        <section>
+
+            <h2>🚌 Assigned Bus</h2>
+
+            <p>
+                <strong>Bus Number:</strong>
+                <span id="busNumber">Loading...</span>
             </p>
 
             <p>
-                This page will contain driver features later.
+                <strong>Bus Name:</strong>
+                <span id="busName">Loading...</span>
             </p>
 
-        </div>
+        </section>
 
-    </main>
 
- <!-- Supabase JavaScript library -->
+        <!-- Route -->
+        <section>
+
+            <h2>🛣️ Assigned Route</h2>
+
+            <h3 id="routeName">
+                Loading...
+            </h3>
+
+            <p id="routeDescription">
+                Loading...
+            </p>
+
+        </section>
+
+
+        <!-- Route stops -->
+        <section>
+
+            <h2>🛑 Route Stops</h2>
+
+            <ol id="stopList">
+
+                <li>
+                    Loading stops...
+                </li>
+
+            </ol>
+
+        </section>
+
+
+        <!-- Map -->
+        <section>
+
+            <h2>🗺️ Route Map</h2>
+
+            <div
+                id="map"
+                style="
+                    height: 400px;
+                    width: 100%;
+                    border-radius: 12px;
+                    margin-top: 15px;
+                "
+            ></div>
+
+        </section>
+
+
+        <!-- Trip -->
+        <section>
+
+            <h2>🚍 Trip Control</h2>
+
+            <p>
+                Status:
+                <strong id="tripStatus">
+                    Not Started
+                </strong>
+            </p>
+
+            <button
+                id="startTripBtn"
+                type="button"
+            >
+                ▶️ Start Trip
+            </button>
+
+            <button
+                id="endTripBtn"
+                type="button"
+                disabled
+            >
+                ⏹️ End Trip
+            </button>
+
+        </section>
+
+
+        <!-- GPS -->
+        <section>
+
+            <h2>📍 GPS Tracking</h2>
+
+            <p>
+                Status:
+                <strong id="gpsStatus">
+                    GPS OFF
+                </strong>
+            </p>
+
+            <button
+                id="startGpsBtn"
+                type="button"
+            >
+                📍 Start GPS
+            </button>
+
+            <button
+                id="stopGpsBtn"
+                type="button"
+                disabled
+            >
+                ⏸️ Stop GPS
+            </button>
+
+        </section>
+
+
+        <br>
+
+        <button
+            onclick="window.location.href='/index.html'"
+        >
+            Logout
+        </button>
+
+    </div>
+
+</main>
+
+
+<!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- UniBus security guard -->
+
+<!-- Leaflet -->
+<script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+</script>
+
+
+<!-- Security -->
 <script src="/auth-guard.js"></script>
 
-<!-- Protect this page -->
+
 <script>
+
     protectPage("driver");
+
 </script>
+
+
+<!-- Driver Dashboard -->
+<script src="./driver.js"></script>
 
 </body>
 
