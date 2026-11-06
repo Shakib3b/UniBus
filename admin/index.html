@@ -1148,9 +1148,21 @@
         </div>
 
 
-        <div class="admin-badge">
+        <div class="header-actions" style="display:flex;align-items:center;gap:12px;">
 
-            Administrator
+            <div class="admin-badge">
+                Administrator
+            </div>
+
+            <button
+                id="adminLogoutBtn"
+                type="button"
+                class="btn danger"
+                onclick="adminLogout()"
+                style="padding:9px 15px;"
+            >
+                Logout
+            </button>
 
         </div>
 
@@ -1833,6 +1845,67 @@
 
 
         <!-- =================================================
+             STUDENT ACCOUNT MANAGEMENT
+        ================================================== -->
+
+        <section class="card">
+
+            <div class="card-header">
+                <div>
+                    <h3>🎓 Student Account Management</h3>
+                    <p>Create student login IDs and passwords for the UniBus student panel.</p>
+                </div>
+            </div>
+
+            <div class="card-body">
+
+                <div class="form-grid">
+
+                    <div class="field">
+                        <label for="studentFullName">Student Full Name</label>
+                        <input id="studentFullName" type="text"
+                            placeholder="e.g. Tanvir Ahmed" autocomplete="name">
+                    </div>
+
+                    <div class="field">
+                        <label for="studentLoginId">Student Login ID</label>
+                        <input id="studentLoginId" type="text"
+                            placeholder="e.g. student01" autocomplete="username">
+                    </div>
+
+                    <div class="field">
+                        <label for="studentPassword">Password</label>
+                        <input id="studentPassword" type="password"
+                            placeholder="Minimum 6 characters" autocomplete="new-password">
+                    </div>
+
+                    <div class="field">
+                        <label for="studentPasswordConfirm">Confirm Password</label>
+                        <input id="studentPasswordConfirm" type="password"
+                            placeholder="Re-enter password" autocomplete="new-password">
+                    </div>
+
+                </div>
+
+                <div class="buttons">
+                    <button id="createStudentBtn" class="btn primary"
+                        type="button" onclick="createStudentAccount()">
+                        + Create Student Account
+                    </button>
+                </div>
+
+                <p style="margin-top:12px;color:#6b7280;font-size:12px;line-height:1.6;">
+                    Students sign in using the Login ID and password. The system creates
+                    the internal email as <strong>loginid@busportal.app</strong> and assigns
+                    the <strong>user</strong> role automatically.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
              STOP + ROUTE MAP
         ================================================== -->
 
@@ -2471,6 +2544,163 @@
                 () => item.remove(),
                 3500
             );
+
+        }
+
+
+        /* =====================================================
+           ADMIN LOGOUT
+        ===================================================== */
+
+        async function adminLogout() {
+
+            const button = document.getElementById("adminLogoutBtn");
+
+            if (button) {
+                button.disabled = true;
+                button.textContent = "Logging out...";
+            }
+
+            try {
+
+                const { error } = await supabaseClient.auth.signOut();
+
+                if (error) {
+                    throw error;
+                }
+
+                window.location.href = "/";
+
+            } catch (error) {
+
+                console.error("Admin logout failed:", error);
+
+                toast(
+                    error.message || "Could not log out. Please try again.",
+                    "error"
+                );
+
+                if (button) {
+                    button.disabled = false;
+                    button.textContent = "Logout";
+                }
+
+            }
+
+        }
+
+
+        /* =====================================================
+           CREATE STUDENT ACCOUNT
+        ===================================================== */
+
+        async function createStudentAccount() {
+
+            const fullName =
+                document.getElementById("studentFullName").value.trim();
+
+            const loginId =
+                document.getElementById("studentLoginId").value.trim().toLowerCase();
+
+            const password =
+                document.getElementById("studentPassword").value;
+
+            const passwordConfirm =
+                document.getElementById("studentPasswordConfirm").value;
+
+            const button =
+                document.getElementById("createStudentBtn");
+
+            if (!fullName || !loginId || !password || !passwordConfirm) {
+                toast("Please complete all student account fields.", "error");
+                return;
+            }
+
+            if (!/^[a-z0-9._-]{3,30}$/.test(loginId)) {
+                toast(
+                    "Login ID must be 3–30 characters and use only letters, numbers, dots, underscores or hyphens.",
+                    "error"
+                );
+                return;
+            }
+
+            if (password.length < 6) {
+                toast("Password must be at least 6 characters.", "error");
+                return;
+            }
+
+            if (password !== passwordConfirm) {
+                toast("Passwords do not match.", "error");
+                return;
+            }
+
+            try {
+
+                const {
+                    data: sessionData,
+                    error: sessionError
+                } = await supabaseClient.auth.getSession();
+
+                if (sessionError || !sessionData.session) {
+                    throw new Error("Your session has expired. Please log in again.");
+                }
+
+                button.disabled = true;
+                button.textContent = "Creating account...";
+
+                const response = await fetch(
+                    "/.netlify/functions/create-student",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization":
+                                `Bearer ${sessionData.session.access_token}`
+                        },
+                        body: JSON.stringify({
+                            full_name: fullName,
+                            login_id: loginId,
+                            password: password
+                        })
+                    }
+                );
+
+                let result = {};
+
+                try {
+                    result = await response.json();
+                } catch {
+                    result = {};
+                }
+
+                if (!response.ok) {
+                    throw new Error(
+                        result.error || "Could not create student account."
+                    );
+                }
+
+                document.getElementById("studentFullName").value = "";
+                document.getElementById("studentLoginId").value = "";
+                document.getElementById("studentPassword").value = "";
+                document.getElementById("studentPasswordConfirm").value = "";
+
+                toast(`Student account created. Login ID: ${loginId}`);
+
+            } catch (error) {
+
+                console.error("Student account creation failed:", error);
+
+                toast(
+                    error.message || "Could not create student account.",
+                    "error"
+                );
+
+            } finally {
+
+                button.disabled = false;
+                button.textContent = "+ Create Student Account";
+
+            }
 
         }
 

@@ -1,0 +1,15 @@
+-- Run once in Supabase SQL Editor for student complaints and in-app notices.
+create table if not exists public.complaints(id uuid primary key default gen_random_uuid(),student_id uuid not null references auth.users(id) on delete cascade,bus_id uuid references public.buses(id) on delete set null,category text not null,description text not null,status text not null default 'Pending' check(status in ('Pending','In Progress','Resolved','Rejected')),created_at timestamptz not null default now(),updated_at timestamptz not null default now());
+create table if not exists public.notifications(id uuid primary key default gen_random_uuid(),user_id uuid not null references auth.users(id) on delete cascade,title text not null,message text not null,type text not null default 'general',is_read boolean not null default false,created_at timestamptz not null default now());
+create index if not exists complaints_student_created_idx on public.complaints(student_id,created_at desc);
+create index if not exists notifications_user_created_idx on public.notifications(user_id,created_at desc);
+alter table public.complaints enable row level security;alter table public.notifications enable row level security;
+drop policy if exists "Students can submit complaints" on public.complaints;create policy "Students can submit complaints" on public.complaints for insert to authenticated with check(auth.uid()=student_id and exists(select 1 from public.profiles p where p.id=auth.uid() and p.role='user'));
+drop policy if exists "Students can view own complaints" on public.complaints;create policy "Students can view own complaints" on public.complaints for select to authenticated using(auth.uid()=student_id);
+drop policy if exists "Admins can manage complaints" on public.complaints;create policy "Admins can manage complaints" on public.complaints for all to authenticated using(exists(select 1 from public.profiles p where p.id=auth.uid() and p.role='admin')) with check(exists(select 1 from public.profiles p where p.id=auth.uid() and p.role='admin'));
+drop policy if exists "Users can read own notifications" on public.notifications;create policy "Users can read own notifications" on public.notifications for select to authenticated using(auth.uid()=user_id);
+drop policy if exists "Users can mark own notifications read" on public.notifications;create policy "Users can mark own notifications read" on public.notifications for update to authenticated using(auth.uid()=user_id) with check(auth.uid()=user_id);
+drop policy if exists "Admins can create notifications" on public.notifications;create policy "Admins can create notifications" on public.notifications for insert to authenticated with check(exists(select 1 from public.profiles p where p.id=auth.uid() and p.role='admin'));
+-- If these tables are already in supabase_realtime, remove the corresponding ALTER line before running.
+alter publication supabase_realtime add table public.bus_locations;
+alter publication supabase_realtime add table public.notifications;
