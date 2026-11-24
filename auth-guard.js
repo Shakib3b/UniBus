@@ -4,12 +4,12 @@
 
 // Supabase project URL
 const SUPABASE_URL =
-    "https://hkgokigrymuslbbtwfpb.supabase.co";
+    "https://wbrjuowfjophuucosbmy.supabase.co";
 
 // Supabase publishable key
 // This key is SAFE to use in browser code.
 const SUPABASE_ANON_KEY =
-    "sb_publishable_BqjPT0XpHgK_44BdZ7K7ag_3hthBXBL";
+    "sb_publishable_oe4jGIC89Fs39VWXQiTr2w_7nGqhvfm";
 
 
 // Create Supabase connection

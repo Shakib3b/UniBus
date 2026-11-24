@@ -25,12 +25,12 @@ exports.handler = async (event) => {
         // ==========================================
 
         const supabaseUrl =
-            "https://hkgokigrymuslbbtwfpb.supabase.co";
+            process.env.SUPABASE_URL;
 
         const serviceRoleKey =
             process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-        if (!serviceRoleKey) {
+        if (!serviceRoleKey || !supabaseUrl) {
             return {
                 statusCode: 500,
                 headers: {

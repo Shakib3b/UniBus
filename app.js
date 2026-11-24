@@ -2,9 +2,9 @@
 // UniBus - Supabase Configuration
 // ==========================================
 
-const SUPABASE_URL = "https://hkgokigrymuslbbtwfpb.supabase.co";
+const SUPABASE_URL = "https://wbrjuowfjophuucosbmy.supabase.co";
 
-const SUPABASE_ANON_KEY = "sb_publishable_BqjPT0XpHgK_44BdZ7K7ag_3hthBXBL";
+const SUPABASE_ANON_KEY = "sb_publishable_oe4jGIC89Fs39VWXQiTr2w_7nGqhvfm";
 
 
 // Create a connection to Supabase

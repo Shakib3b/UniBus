@@ -1,7 +1,6 @@
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,6 +19,7 @@
         </div>
 
         <div class="student-info">
+            <div class="student-avatar" id="studentAvatar">S</div>
             <span id="studentName">Loading...</span>
             <button id="logoutBtn" class="logout-btn">Logout</button>
         </div>
@@ -30,7 +30,7 @@
         <aside class="sidebar">
             <p class="sidebar-heading">MENU</p>
 
-            <a href="index.html" class="nav-link active">
+            <a href="#dashboard" class="nav-link active">
                 <span>🏠</span> Dashboard
             </a>
 
@@ -45,11 +45,17 @@
             <a href="#routes" class="nav-link">
                 <span>🗺️</span> Routes & Stops
             </a>
+
+            <a href="#account" class="nav-link">
+                <span>👤</span> My Account
+            </a>
         </aside>
 
         <main class="main-content">
 
-            <section class="welcome-section">
+            <!-- DASHBOARD -->
+            <section id="dashboard" class="welcome-section">
+
                 <p class="eyebrow">STUDENT PORTAL</p>
 
                 <h1>
@@ -59,57 +65,167 @@
                 <p>
                     Manage your university bus journey from one place.
                 </p>
-            </section>
-
-            <section class="info-grid">
-
-                <div class="info-card">
-                    <span class="card-icon">🚌</span>
-                    <h3>Available Buses</h3>
-                    <p>View buses operating on university routes.</p>
-                    <span class="card-status">Coming soon</span>
-                </div>
-
-                <div class="info-card">
-                    <span class="card-icon">📍</span>
-                    <h3>Live Tracking</h3>
-                    <p>Track buses and check their current locations.</p>
-                    <span class="card-status">Coming soon</span>
-                </div>
-
-                <div class="info-card">
-                    <span class="card-icon">🗺️</span>
-                    <h3>Routes & Stops</h3>
-                    <p>Explore available routes and bus stops.</p>
-                    <span class="card-status">Coming soon</span>
-                </div>
 
             </section>
 
-            <section class="account-section">
-                <h2>Account Information</h2>
+            <!-- STATISTICS -->
+            <section class="stats-grid">
 
-                <div class="account-details">
-                    <div>
-                        <span class="detail-label">Full Name</span>
-                        <p id="profileName">Loading...</p>
-                    </div>
+                <div class="stat-card">
+                    <div class="stat-icon blue">🚌</div>
 
                     <div>
-                        <span class="detail-label">Login ID</span>
-                        <p id="loginId">Loading...</p>
-                    </div>
-
-                    <div>
-                        <span class="detail-label">Account Role</span>
-                        <p>Student</p>
+                        <p class="stat-label">Available Buses</p>
+                        <h2 id="busCount">--</h2>
                     </div>
                 </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon green">🟢</div>
+
+                    <div>
+                        <p class="stat-label">Active Buses</p>
+                        <h2 id="activeBusCount">--</h2>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon purple">🗺️</div>
+
+                    <div>
+                        <p class="stat-label">Available Routes</p>
+                        <h2 id="routeCount">--</h2>
+                    </div>
+                </div>
+
             </section>
+
+            <!-- AVAILABLE BUSES -->
+            <section id="buses" class="content-section">
+
+                <div class="section-header">
+                    <div>
+                        <p class="eyebrow">TRANSPORTATION</p>
+                        <h2>Available Buses</h2>
+                        <p class="section-description">
+                            Buses currently registered in the UniBus system.
+                        </p>
+                    </div>
+
+                    <button class="refresh-btn" id="refreshBtn">
+                        ↻ Refresh
+                    </button>
+                </div>
+
+                <div id="busList" class="bus-grid">
+                    <div class="loading-card">Loading buses...</div>
+                </div>
+
+            </section>
+
+            <!-- LIVE TRACKING -->
+            <section id="tracking" class="content-section">
+
+                <div class="section-header">
+                    <div>
+                        <p class="eyebrow">REAL-TIME TRANSPORT</p>
+                        <h2>Live Tracking</h2>
+                        <p class="section-description">
+                            Track university buses and check their current locations.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="tracking-placeholder">
+
+                    <div class="tracking-icon">📍</div>
+
+                    <h3>Live Bus Tracking</h3>
+
+                    <p>
+                        Live bus locations, your distance from the bus,
+                        and estimated arrival times will appear here.
+                    </p>
+
+                    <span class="feature-badge">Tracking module coming next</span>
+
+                </div>
+
+            </section>
+
+            <!-- ROUTES -->
+            <section id="routes" class="content-section">
+
+                <div class="section-header">
+                    <div>
+                        <p class="eyebrow">JOURNEY INFORMATION</p>
+                        <h2>Routes & Stops</h2>
+                        <p class="section-description">
+                            Explore university bus routes and their stops.
+                        </p>
+                    </div>
+                </div>
+
+                <div id="routeList" class="route-list">
+                    <div class="loading-card">Loading routes...</div>
+                </div>
+
+            </section>
+
+            <!-- ACCOUNT -->
+            <section id="account" class="content-section">
+
+                <div class="section-header">
+                    <div>
+                        <p class="eyebrow">PERSONAL INFORMATION</p>
+                        <h2>My Account</h2>
+                    </div>
+                </div>
+
+                <div class="account-section">
+
+                    <div class="account-profile-header">
+                        <div class="large-avatar" id="accountAvatar">S</div>
+
+                        <div>
+                            <h3 id="accountFullName">Loading...</h3>
+                            <p>Student Account</p>
+                        </div>
+                    </div>
+
+                    <div class="account-details">
+
+                        <div class="account-item">
+                            <span class="detail-label">Full Name</span>
+                            <p id="profileName">Loading...</p>
+                        </div>
+
+                        <div class="account-item">
+                            <span class="detail-label">Login ID</span>
+                            <p id="loginId">Loading...</p>
+                        </div>
+
+                        <div class="account-item">
+                            <span class="detail-label">Account Role</span>
+                            <p>Student</p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <footer class="footer">
+                <p>UniBus Student Portal</p>
+                <p>University Transportation Management System</p>
+            </footer>
 
         </main>
 
     </div>
+
+    <div id="toast" class="toast"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="/auth-guard.js"></script>
